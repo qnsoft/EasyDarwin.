@@ -2149,7 +2149,10 @@ void RTSPSession::HandleIncomingDataPacket()
 		fRTPSession = (RTPSession*)theRef->GetObject();
 
 	if (fRTPSession == NULL)
+	{
+		this->Signal(Task::kKillEvent);
 		return;
+	}
 
 	StrPtrLen packetWithoutHeaders(fInputStream.GetRequestBuffer()->Ptr + 4, fInputStream.GetRequestBuffer()->Len - 4);
 
