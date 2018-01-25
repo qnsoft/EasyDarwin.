@@ -62,7 +62,7 @@ public:
 	virtual ~QTSSMessages()
 	{
 		for (UInt32 x = 0; x < numAttrs; x++)
-			if (attrBuffer[x] != nullptr)
+			if (attrBuffer[x] != NULL)
 				delete[] attrBuffer[x];
 		delete[] attrBuffer;
 	}
@@ -76,7 +76,7 @@ private:
 
 	enum
 	{
-		kNumMessages = 74 // 0 based count so it is one more than last message index number
+		kNumMessages = 42 // 0 based count so it is one more than last message index number
 	};
 
 	static char*        sMessagesKeyStrings[];

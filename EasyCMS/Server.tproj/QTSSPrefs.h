@@ -53,8 +53,8 @@ public:
 		StrPtrLen* inModuleName,
 		QTSSDictionaryMap* inMap,
 		bool areInstanceAttrsAllowed,
-		QTSSPrefs* parentDictionary = nullptr);
-	virtual ~QTSSPrefs() { if (fPrefName != nullptr) delete[] fPrefName; }
+		QTSSPrefs* parentDictionary = NULL);
+	virtual ~QTSSPrefs() { if (fPrefName != NULL) delete[] fPrefName; }
 
 	//This is callable at any time, and is thread safe wrt to the accessors
 	void        RereadPreferences();
@@ -76,9 +76,9 @@ protected:
 	//
 	// Specify inNumValues if you wish to restrict the number of values retrieved
 	// from the text file to a certain number, otherwise specify 0.
-	void setPrefValuesFromFile(ContainerRef container, UInt32 inPrefIndex, QTSS_AttributeID inAttrID, UInt32 inNumValues = 0);
-	void setPrefValuesFromFileWithRef(ContainerRef pref, QTSS_AttributeID inAttrID, UInt32 inNumValues = 0);
-	void setObjectValuesFromFile(ContainerRef pref, QTSS_AttributeID inAttrID, UInt32 inNumValues, char* prefName);
+	void SetPrefValuesFromFile(ContainerRef container, UInt32 inPrefIndex, QTSS_AttributeID inAttrID, UInt32 inNumValues = 0);
+	void SetPrefValuesFromFileWithRef(ContainerRef pref, QTSS_AttributeID inAttrID, UInt32 inNumValues = 0);
+	void SetObjectValuesFromFile(ContainerRef pref, QTSS_AttributeID inAttrID, UInt32 inNumValues, char* prefName);
 
 	//
 	// SET PREF VALUE
@@ -87,20 +87,20 @@ protected:
 	// index. This function does the conversion, and uses the converted size of the
 	// value when setting the value. If you wish to override this size, specify inValueSize,
 	// otherwise it can be 0.
-	void setPrefValue(QTSS_AttributeID inAttrID, UInt32 inAttrIndex,
+	void SetPrefValue(QTSS_AttributeID inAttrID, UInt32 inAttrIndex,
 		char* inPrefValue, QTSS_AttrDataType inPrefType, UInt32 inValueSize = 0);
 
 	//
 	// Completion routines for SetValue and RemoveValue write back to the config source
-	virtual void    removeValueComplete(UInt32 inAttrIndex, QTSSDictionaryMap* inMap,
+	virtual void    RemoveValueComplete(UInt32 inAttrIndex, QTSSDictionaryMap* inMap,
 		UInt32 inValueIndex);
 
-	virtual void    setValueComplete(UInt32 inAttrIndex, QTSSDictionaryMap* inMap,
+	virtual void    SetValueComplete(UInt32 inAttrIndex, QTSSDictionaryMap* inMap,
 		UInt32 inValueIndex, void* inNewValue, UInt32 inNewValueLen);
 
-	virtual void    removeInstanceAttrComplete(UInt32 inAttrindex, QTSSDictionaryMap* inMap);
+	virtual void    RemoveInstanceAttrComplete(UInt32 inAttrindex, QTSSDictionaryMap* inMap);
 
-	virtual QTSSDictionary* createNewDictionary(QTSSDictionaryMap* inMap, OSMutex* inMutex);
+	virtual QTSSDictionary* CreateNewDictionary(QTSSDictionaryMap* inMap, OSMutex* inMutex);
 
 	XMLPrefsParser* fPrefsSource;
 	OSMutex fPrefsMutex;
@@ -109,7 +109,7 @@ protected:
 
 private:
 
-	QTSS_AttributeID addPrefAttribute(const char* inAttrName, QTSS_AttrDataType inDataType);
+	QTSS_AttributeID AddPrefAttribute(const char* inAttrName, QTSS_AttrDataType inDataType);
 
 };
 #endif //__QTSSMODULEPREFS_H__

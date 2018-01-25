@@ -112,13 +112,13 @@ public:
 	QTSSErrorLog() : QTSSRollingLog() { this->SetTaskName("QTSSErrorLog"); }
 	virtual ~QTSSErrorLog() {}
 
-	char* getLogName() override { return QTSServerInterface::GetServer()->GetPrefs()->GetErrorLogName(); }
+	virtual char* getLogName() { return QTSServerInterface::GetServer()->GetPrefs()->GetErrorLogName(); }
 
-	char* getLogDir() override { return QTSServerInterface::GetServer()->GetPrefs()->GetErrorLogDir(); }
+	virtual char* getLogDir() { return QTSServerInterface::GetServer()->GetPrefs()->GetErrorLogDir(); }
 
-	UInt32 getRollIntervalInDays() override { return QTSServerInterface::GetServer()->GetPrefs()->GetErrorRollIntervalInDays(); }
+	UInt32 getRollIntervalInDays() { return QTSServerInterface::GetServer()->GetPrefs()->GetErrorRollIntervalInDays(); }
 
-	UInt32 getMaxLogBytes() override { return QTSServerInterface::GetServer()->GetPrefs()->GetMaxErrorLogBytes(); }
+	virtual UInt32 getMaxLogBytes() { return QTSServerInterface::GetServer()->GetPrefs()->GetMaxErrorLogBytes(); }
 
 };
 
@@ -138,12 +138,12 @@ const UInt32 kMaxLogStringLen = 2172;
 
 // STATIC DATA
 
-static OSMutex*         sLogMutex = nullptr;//Log module isn't reentrant
-static QTSSErrorLog*    sErrorLog = nullptr;
+static OSMutex*         sLogMutex = NULL;//Log module isn't reentrant
+static QTSSErrorLog*    sErrorLog = NULL;
 static char             sLastErrorString[kMaxLogStringLen] = "";
 static int              sDupErrorStringCount = 0;
 static bool           sStartedUp = false;
-static ErrorLogCheckTask* sErrorLogCheckTask = nullptr;
+static ErrorLogCheckTask* sErrorLogCheckTask = NULL;
 
 
 
@@ -206,12 +206,12 @@ QTSS_Error Register(QTSS_Register_Params* inParams)
 QTSS_Error Shutdown()
 {
 	WriteShutdownMessage();
-	if (sErrorLogCheckTask != nullptr)
+	if (sErrorLogCheckTask != NULL)
 	{
 		// sErrorLogCheckTask is a task object, so don't delete it directly
 		// instead we signal it to kill itself.
 		sErrorLogCheckTask->Signal(Task::kKillEvent);
-		sErrorLogCheckTask = nullptr;
+		sErrorLogCheckTask = NULL;
 	}
 	return QTSS_NoErr;
 }
@@ -228,7 +228,7 @@ QTSS_Error StateChange(QTSS_StateChange_Params* stateChangeParams)
 		// the server's state back to the start -- [sfu]    
 		QTSS_ServiceID id;
 		(void)QTSS_IDForService(QTSS_REREAD_PREFS_SERVICE, &id);
-		(void)QTSS_DoService(id, nullptr);
+		(void)QTSS_DoService(id, NULL);
 		WriteStartupMessage();
 	}
 
@@ -238,8 +238,8 @@ QTSS_Error StateChange(QTSS_StateChange_Params* stateChangeParams)
 
 QTSS_Error LogError(QTSS_RoleParamPtr inParamBlock)
 {
-	Assert(nullptr != inParamBlock->errorParams.inBuffer);
-	if (inParamBlock->errorParams.inBuffer == nullptr)
+	Assert(NULL != inParamBlock->errorParams.inBuffer);
+	if (inParamBlock->errorParams.inBuffer == NULL)
 		return QTSS_NoErr;
 
 	UInt16 verbLvl = (UInt16)inParamBlock->errorParams.inVerbosity;
@@ -284,7 +284,7 @@ QTSS_Error LogError(QTSS_RoleParamPtr inParamBlock)
 
 				CheckErrorLogState();
 
-				if (sErrorLog == nullptr)
+				if (sErrorLog == NULL)
 					return QTSS_NoErr;
 
 				//timestamp the error
@@ -316,7 +316,7 @@ QTSS_Error LogError(QTSS_RoleParamPtr inParamBlock)
 
 		CheckErrorLogState();
 
-		if (sErrorLog == nullptr)
+		if (sErrorLog == NULL)
 			return QTSS_NoErr;
 
 		//timestamp the error
@@ -347,16 +347,16 @@ void CheckErrorLogState()
 	QTSServerPrefs* thePrefs = QTSServerInterface::GetServer()->GetPrefs();
 
 	//check error log.
-	if ((nullptr == sErrorLog) && (thePrefs->IsErrorLogEnabled()))
+	if ((NULL == sErrorLog) && (thePrefs->IsErrorLogEnabled()))
 	{
 		sErrorLog = new QTSSErrorLog();
 		sErrorLog->EnableLog();
 	}
 
-	if ((nullptr != sErrorLog) && (!thePrefs->IsErrorLogEnabled()))
+	if ((NULL != sErrorLog) && (!thePrefs->IsErrorLogEnabled()))
 	{
 		sErrorLog->Delete(); //sErrorLog is a task object, so don't delete it directly
-		sErrorLog = nullptr;
+		sErrorLog = NULL;
 	}
 }
 
@@ -365,7 +365,7 @@ void CheckErrorLogState()
 QTSS_Error RollErrorLog(QTSS_ServiceFunctionArgsPtr /*inArgs*/)
 {
 	OSMutexLocker locker(sLogMutex);
-	if (sErrorLog != nullptr)
+	if (sErrorLog != NULL)
 		sErrorLog->RollLog();
 	return QTSS_NoErr;
 }
@@ -386,11 +386,11 @@ void WriteStartupMessage()
 		qtss_snprintf(tempBuffer, sizeof(tempBuffer), "# Streaming STARTUP %s\n", theDateBuffer);
 
 	// log startup message to error log as well.
-	if ((result) && (sErrorLog != nullptr))
+	if ((result) && (sErrorLog != NULL))
 		sErrorLog->WriteToLog(tempBuffer, kAllowLogToRoll);
 
 	//write the expire date to the log
-	if (QTSSExpirationDate::WillSoftwareExpire() && sErrorLog != nullptr)
+	if (QTSSExpirationDate::WillSoftwareExpire() && sErrorLog != NULL)
 	{
 		QTSSExpirationDate::sPrintExpirationDate(tempBuffer);
 		sErrorLog->WriteToLog(tempBuffer, kAllowLogToRoll);
@@ -413,7 +413,7 @@ void WriteShutdownMessage()
 	if (result)
 		qtss_snprintf(tempBuffer, sizeof(tempBuffer), "# Streaming SHUTDOWN %s\n", theDateBuffer);
 
-	if (result && sErrorLog != nullptr)
+	if (result && sErrorLog != NULL)
 		sErrorLog->WriteToLog(tempBuffer, kAllowLogToRoll);
 }
 
@@ -431,7 +431,7 @@ SInt64 ErrorLogCheckTask::Run()
 	{
 		bool success = false;
 
-		if (sErrorLog != nullptr && sErrorLog->IsLogEnabled())
+		if (sErrorLog != NULL && sErrorLog->IsLogEnabled())
 			success = sErrorLog->CheckRollLog();
 		Assert(success);
 	}

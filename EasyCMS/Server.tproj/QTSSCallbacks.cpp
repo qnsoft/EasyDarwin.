@@ -61,7 +61,7 @@ void* QTSSCallbacks::QTSS_New(FourCharCode /*inMemoryIdentifier*/, UInt32 inSize
 
     //return OSMemory::New(inSize, inMemoryIdentifier, false);
 
-	auto temp = new int[inSize];
+	int* temp = new int[inSize];
 
     return temp;
 }
@@ -73,24 +73,24 @@ void QTSSCallbacks::QTSS_Delete(void* inMemory)
 
 void QTSSCallbacks::QTSS_Milliseconds(SInt64* outMilliseconds)
 {
-    if (outMilliseconds != nullptr)
+    if (outMilliseconds != NULL)
         *outMilliseconds = OS::Milliseconds();
 }
 
 void QTSSCallbacks::QTSS_ConvertToUnixTime(SInt64 *inQTSS_MilliSecondsPtr, time_t* outSecondsPtr)
 {
-    if ((nullptr != outSecondsPtr) && (nullptr != inQTSS_MilliSecondsPtr))
+    if ((NULL != outSecondsPtr) && (NULL != inQTSS_MilliSecondsPtr))
         *outSecondsPtr = OS::TimeMilli_To_UnixTimeSecs(*inQTSS_MilliSecondsPtr);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_AddRole(QTSS_Role inRole)
 {
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // Roles can only be added before modules have had their Initialize role invoked.
-    if ((theState == nullptr) || (theState->curRole != QTSS_Register_Role))
+    if ((theState == NULL) || (theState->curRole != QTSS_Register_Role))
         return QTSS_OutOfState;
 
     return theState->curModule->AddRole(inRole);
@@ -98,7 +98,7 @@ QTSS_Error QTSSCallbacks::QTSS_AddRole(QTSS_Role inRole)
 
 QTSS_Error QTSSCallbacks::QTSS_LockObject(QTSS_Object inDictionary)
 {
-    if (inDictionary == nullptr)
+    if (inDictionary == NULL)
         return QTSS_BadArgument;
 
     static_cast<QTSSDictionary*>(inDictionary)->GetMutex()->Lock();
@@ -108,7 +108,7 @@ QTSS_Error QTSSCallbacks::QTSS_LockObject(QTSS_Object inDictionary)
 
 QTSS_Error QTSSCallbacks::QTSS_UnlockObject(QTSS_Object inDictionary)
 {
-    if (inDictionary == nullptr)
+    if (inDictionary == NULL)
         return QTSS_BadArgument;
 
     static_cast<QTSSDictionary*>(inDictionary)->SetLocked(false);
@@ -136,13 +136,13 @@ QTSS_Error QTSSCallbacks::QTSS_AddAttribute(QTSS_ObjectType inType, const char* 
 
 QTSS_Error QTSSCallbacks::QTSS_AddStaticAttribute(QTSS_ObjectType inObjectType, const char* inAttrName, void* inUnused, QTSS_AttrDataType inAttrDataType)
 {
-    Assert(inUnused == nullptr);
+    Assert(inUnused == NULL);
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // Static attributes can only be added before modules have had their Initialize role invoked.
-    if ((theState == nullptr) || (theState->curRole != QTSS_Register_Role))
+    if ((theState == NULL) || (theState->curRole != QTSS_Register_Role))
         return QTSS_OutOfState;
 
     UInt32 theDictionaryIndex = QTSSDictionaryMap::GetMapIndex(inObjectType);
@@ -150,21 +150,21 @@ QTSS_Error QTSSCallbacks::QTSS_AddStaticAttribute(QTSS_ObjectType inObjectType, 
         return QTSS_BadArgument;
 
     QTSSDictionaryMap* theMap = QTSSDictionaryMap::GetMap(theDictionaryIndex);
-    return theMap->AddAttribute(inAttrName, nullptr, inAttrDataType, qtssAttrModeRead | qtssAttrModeWrite | qtssAttrModePreempSafe);
+    return theMap->AddAttribute(inAttrName, NULL, inAttrDataType, qtssAttrModeRead | qtssAttrModeWrite | qtssAttrModePreempSafe);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_AddInstanceAttribute(QTSS_Object inObject, const char* inAttrName, void* inUnused, QTSS_AttrDataType inAttrDataType)
 {
-    Assert(inUnused == nullptr);
-    if ((inObject == nullptr) || (inAttrName == nullptr))
+    Assert(inUnused == NULL);
+    if ((inObject == NULL) || (inAttrName == NULL))
         return QTSS_BadArgument;
 
-    return static_cast<QTSSDictionary*>(inObject)->AddInstanceAttribute(inAttrName, nullptr, inAttrDataType, qtssAttrModeRead | qtssAttrModeWrite | qtssAttrModeDelete | qtssAttrModePreempSafe);
+    return static_cast<QTSSDictionary*>(inObject)->AddInstanceAttribute(inAttrName, NULL, inAttrDataType, qtssAttrModeRead | qtssAttrModeWrite | qtssAttrModeDelete | qtssAttrModePreempSafe);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_RemoveInstanceAttribute(QTSS_Object inObject, QTSS_AttributeID inID)
 {
-    if (inObject == nullptr || (inID == qtssIllegalAttrID))
+    if (inObject == NULL || (inID == qtssIllegalAttrID))
         return QTSS_BadArgument;
 
     return static_cast<QTSSDictionary*>(inObject)->RemoveInstanceAttribute(inID);
@@ -172,7 +172,7 @@ QTSS_Error QTSSCallbacks::QTSS_RemoveInstanceAttribute(QTSS_Object inObject, QTS
 
 QTSS_Error QTSSCallbacks::QTSS_IDForAttr(QTSS_ObjectType inType, const char* inName, QTSS_AttributeID* outID)
 {
-    if (outID == nullptr)
+    if (outID == NULL)
         return QTSS_BadArgument;
 
     UInt32 theDictionaryIndex = QTSSDictionaryMap::GetMapIndex(inType);
@@ -184,7 +184,7 @@ QTSS_Error QTSSCallbacks::QTSS_IDForAttr(QTSS_ObjectType inType, const char* inN
 
 QTSS_Error QTSSCallbacks::QTSS_GetAttrInfoByIndex(QTSS_Object inObject, UInt32 inIndex, QTSS_Object* outAttrInfoObject)
 {
-    if (inObject == nullptr)
+    if (inObject == NULL)
         return QTSS_BadArgument;
 
     return static_cast<QTSSDictionary*>(inObject)->GetAttrInfoByIndex(inIndex, reinterpret_cast<QTSSAttrInfoDict**>(outAttrInfoObject));
@@ -192,7 +192,7 @@ QTSS_Error QTSSCallbacks::QTSS_GetAttrInfoByIndex(QTSS_Object inObject, UInt32 i
 
 QTSS_Error QTSSCallbacks::QTSS_GetAttrInfoByID(QTSS_Object inObject, QTSS_AttributeID inAttrID, QTSS_Object* outAttrInfoObject)
 {
-    if (inObject == nullptr || (inAttrID == qtssIllegalAttrID))
+    if (inObject == NULL || (inAttrID == qtssIllegalAttrID))
         return QTSS_BadArgument;
 
     return static_cast<QTSSDictionary*>(inObject)->GetAttrInfoByID(inAttrID, reinterpret_cast<QTSSAttrInfoDict**>(outAttrInfoObject));
@@ -200,7 +200,7 @@ QTSS_Error QTSSCallbacks::QTSS_GetAttrInfoByID(QTSS_Object inObject, QTSS_Attrib
 
 QTSS_Error QTSSCallbacks::QTSS_GetAttrInfoByName(QTSS_Object inObject, const char* inAttrName, QTSS_Object* outAttrInfoObject)
 {
-    if (inObject == nullptr)
+    if (inObject == NULL)
         return QTSS_BadArgument;
 
     return static_cast<QTSSDictionary*>(inObject)->GetAttrInfoByName(inAttrName, reinterpret_cast<QTSSAttrInfoDict**>(outAttrInfoObject));
@@ -209,7 +209,7 @@ QTSS_Error QTSSCallbacks::QTSS_GetAttrInfoByName(QTSS_Object inObject, const cha
 
 QTSS_Error QTSSCallbacks::QTSS_GetValuePtr(QTSS_Object inDictionary, QTSS_AttributeID inID, UInt32 inIndex, void** outBuffer, UInt32* outLen)
 {
-    if ((inDictionary == nullptr) || (outBuffer == nullptr) || (outLen == nullptr) || (inID == qtssIllegalAttrID))
+    if ((inDictionary == NULL) || (outBuffer == NULL) || (outLen == NULL) || (inID == qtssIllegalAttrID))
         return QTSS_BadArgument;
     return static_cast<QTSSDictionary*>(inDictionary)->GetValuePtr(inID, inIndex, outBuffer, outLen);
 }
@@ -217,21 +217,21 @@ QTSS_Error QTSSCallbacks::QTSS_GetValuePtr(QTSS_Object inDictionary, QTSS_Attrib
 
 QTSS_Error QTSSCallbacks::QTSS_GetValue(QTSS_Object inDictionary, QTSS_AttributeID inID, UInt32 inIndex, void* ioBuffer, UInt32* ioLen)
 {
-    if (inDictionary == nullptr || (inID == qtssIllegalAttrID))
+    if (inDictionary == NULL || (inID == qtssIllegalAttrID))
         return QTSS_BadArgument;
     return static_cast<QTSSDictionary*>(inDictionary)->GetValue(inID, inIndex, ioBuffer, ioLen);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_GetValueAsString(QTSS_Object inDictionary, QTSS_AttributeID inID, UInt32 inIndex, char** outString)
 {
-    if (inDictionary == nullptr)
+    if (inDictionary == NULL)
         return QTSS_BadArgument;
     return static_cast<QTSSDictionary*>(inDictionary)->GetValueAsString(inID, inIndex, outString);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_TypeToTypeString(const QTSS_AttrDataType inType, char** outTypeString)
 {
-    if (outTypeString == nullptr)
+    if (outTypeString == NULL)
         return QTSS_BadArgument;
 
     *outTypeString = QTSSDataConverter::TypeToTypeString(inType);
@@ -240,7 +240,7 @@ QTSS_Error QTSSCallbacks::QTSS_TypeToTypeString(const QTSS_AttrDataType inType, 
 
 QTSS_Error QTSSCallbacks::QTSS_TypeStringToType(char* inTypeString, QTSS_AttrDataType* outType)
 {
-    if ((inTypeString == nullptr) || (outType == nullptr))
+    if ((inTypeString == NULL) || (outType == NULL))
         return QTSS_BadArgument;
 
     *outType = QTSSDataConverter::TypeStringToType(inTypeString);
@@ -254,7 +254,7 @@ QTSS_Error QTSSCallbacks::QTSS_StringToValue(char* inValueAsString, const QTSS_A
 
 QTSS_Error QTSSCallbacks::QTSS_ValueToString(void* inValue, const UInt32 inValueLen, const QTSS_AttrDataType inType, char** outString)
 {
-    if ((inValue == nullptr) || (outString == nullptr))
+    if ((inValue == NULL) || (outString == NULL))
         return QTSS_BadArgument;
 
     *outString = QTSSDataConverter::ValueToString(inValue, inValueLen, inType);
@@ -263,24 +263,24 @@ QTSS_Error QTSSCallbacks::QTSS_ValueToString(void* inValue, const UInt32 inValue
 
 QTSS_Error QTSSCallbacks::QTSS_SetValue(QTSS_Object inDictionary, QTSS_AttributeID inID, UInt32 inIndex, const void* inBuffer, UInt32 inLen)
 {
-    if ((inDictionary == nullptr) || ((inBuffer == nullptr) && (inLen > 0)) || (inID == qtssIllegalAttrID))
+    if ((inDictionary == NULL) || ((inBuffer == NULL) && (inLen > 0)) || (inID == qtssIllegalAttrID))
         return QTSS_BadArgument;
     return static_cast<QTSSDictionary*>(inDictionary)->SetValue(inID, inIndex, inBuffer, inLen);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_SetValuePtr(QTSS_Object inDictionary, QTSS_AttributeID inID, const void* inBuffer, UInt32 inLen)
 {
-    if ((inDictionary == nullptr) || ((inBuffer == nullptr) && (inLen > 0)))
+    if ((inDictionary == NULL) || ((inBuffer == NULL) && (inLen > 0)))
         return QTSS_BadArgument;
     return static_cast<QTSSDictionary*>(inDictionary)->SetValuePtr(inID, inBuffer, inLen);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_CreateObject(QTSS_Object inDictionary, QTSS_AttributeID inID, QTSS_ObjectType inType, UInt32* outIndex, QTSS_Object* outCreatedObject)
 {
-    if ((inDictionary == nullptr) || (outCreatedObject == nullptr) || (outIndex == nullptr) || (inID == qtssIllegalAttrID))
+    if ((inDictionary == NULL) || (outCreatedObject == NULL) || (outIndex == NULL) || (inID == qtssIllegalAttrID))
         return QTSS_BadArgument;
 
-    QTSSDictionaryMap* theMap = nullptr;
+    QTSSDictionaryMap* theMap = NULL;
     if (inType != qtssDynamicObjectType)
     {
         UInt32 theDictionaryIndex = QTSSDictionaryMap::GetMapIndex(inType);
@@ -295,7 +295,7 @@ QTSS_Error QTSSCallbacks::QTSS_CreateObject(QTSS_Object inDictionary, QTSS_Attri
 
 QTSS_Error QTSSCallbacks::QTSS_GetNumValues(QTSS_Object inObject, QTSS_AttributeID inID, UInt32* outNumValues)
 {
-    if ((inObject == nullptr) || (outNumValues == nullptr) || (inID == qtssIllegalAttrID))
+    if ((inObject == NULL) || (outNumValues == NULL) || (inID == qtssIllegalAttrID))
         return QTSS_BadArgument;
 
     *outNumValues = static_cast<QTSSDictionary*>(inObject)->GetNumValues(inID);
@@ -305,10 +305,10 @@ QTSS_Error QTSSCallbacks::QTSS_GetNumValues(QTSS_Object inObject, QTSS_Attribute
 QTSS_Error QTSSCallbacks::QTSS_GetNumAttributes(QTSS_Object inObject, UInt32* outNumValues)
 {
 
-    if (outNumValues == nullptr)
+    if (outNumValues == NULL)
         return QTSS_BadArgument;
 
-    if (inObject == nullptr)
+    if (inObject == NULL)
         return QTSS_BadArgument;
 
     OSMutexLocker locker(static_cast<QTSSDictionary*>(inObject)->GetMutex());
@@ -318,11 +318,11 @@ QTSS_Error QTSSCallbacks::QTSS_GetNumAttributes(QTSS_Object inObject, UInt32* ou
 
     // Get the Static Attribute count
     theMap = static_cast<QTSSDictionary*>(inObject)->GetDictionaryMap();
-    if (theMap != nullptr)
+    if (theMap != NULL)
         *outNumValues += theMap->GetNumNonRemovedAttrs();
     // Get the Instance Attribute count
     theMap = static_cast<QTSSDictionary*>(inObject)->GetInstanceDictMap();
-    if (theMap != nullptr)
+    if (theMap != NULL)
         *outNumValues += theMap->GetNumNonRemovedAttrs();
 
     return QTSS_NoErr;
@@ -330,7 +330,7 @@ QTSS_Error QTSSCallbacks::QTSS_GetNumAttributes(QTSS_Object inObject, UInt32* ou
 
 QTSS_Error QTSSCallbacks::QTSS_RemoveValue(QTSS_Object inObject, QTSS_AttributeID inID, UInt32 inIndex)
 {
-    if (inObject == nullptr)
+    if (inObject == NULL)
         return QTSS_BadArgument;
 
     return static_cast<QTSSDictionary*>(inObject)->RemoveValue(inID, inIndex);
@@ -338,7 +338,7 @@ QTSS_Error QTSSCallbacks::QTSS_RemoveValue(QTSS_Object inObject, QTSS_AttributeI
 
 QTSS_Error QTSSCallbacks::QTSS_Write(QTSS_StreamRef inStream, void* inBuffer, UInt32 inLen, UInt32* outLenWritten, UInt32 inFlags)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
     QTSS_Error theErr = static_cast<QTSSStream*>(inStream)->Write(inBuffer, inLen, outLenWritten, inFlags);
 
@@ -355,7 +355,7 @@ QTSS_Error QTSSCallbacks::QTSS_Write(QTSS_StreamRef inStream, void* inBuffer, UI
 
 QTSS_Error QTSSCallbacks::QTSS_WriteV(QTSS_StreamRef inStream, iovec* inVec, UInt32 inNumVectors, UInt32 inTotalLength, UInt32* outLenWritten)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
     QTSS_Error theErr = static_cast<QTSSStream*>(inStream)->WriteV(inVec, inNumVectors, inTotalLength, outLenWritten);
 
@@ -372,7 +372,7 @@ QTSS_Error QTSSCallbacks::QTSS_WriteV(QTSS_StreamRef inStream, iovec* inVec, UIn
 
 QTSS_Error QTSSCallbacks::QTSS_Flush(QTSS_StreamRef inStream)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
     QTSS_Error theErr = static_cast<QTSSStream*>(inStream)->Flush();
 
@@ -389,7 +389,7 @@ QTSS_Error QTSSCallbacks::QTSS_Flush(QTSS_StreamRef inStream)
 
 QTSS_Error QTSSCallbacks::QTSS_Read(QTSS_StreamRef inStream, void* ioBuffer, UInt32 inBufLen, UInt32* outLengthRead)
 {
-    if ((inStream == nullptr) || (ioBuffer == nullptr))
+    if ((inStream == NULL) || (ioBuffer == NULL))
         return QTSS_BadArgument;
     QTSS_Error theErr = static_cast<QTSSStream*>(inStream)->Read(ioBuffer, inBufLen, outLengthRead);
 
@@ -406,21 +406,21 @@ QTSS_Error QTSSCallbacks::QTSS_Read(QTSS_StreamRef inStream, void* ioBuffer, UIn
 
 QTSS_Error QTSSCallbacks::QTSS_Seek(QTSS_StreamRef inStream, UInt64 inNewPosition)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
     return static_cast<QTSSStream*>(inStream)->Seek(inNewPosition);
 }
 
 QTSS_Error  QTSSCallbacks::QTSS_Advise(QTSS_StreamRef inStream, UInt64 inPosition, UInt32 inAdviseSize)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
     return static_cast<QTSSStream*>(inStream)->Advise(inPosition, inAdviseSize);
 }
 
 QTSS_Error QTSSCallbacks::QTSS_OpenFileObject(char* inPath, QTSS_OpenFileFlags inFlags, QTSS_Object* outFileObject)
 {
-    if ((inPath == nullptr) || (outFileObject == nullptr))
+    if ((inPath == NULL) || (outFileObject == NULL))
         return QTSS_BadArgument;
 
     //
@@ -438,7 +438,7 @@ QTSS_Error QTSSCallbacks::QTSS_OpenFileObject(char* inPath, QTSS_OpenFileFlags i
 
 QTSS_Error QTSSCallbacks::QTSS_CloseFileObject(QTSS_Object inFileObject)
 {
-    if (inFileObject == nullptr)
+    if (inFileObject == NULL)
         return QTSS_BadArgument;
 
     QTSSFile* theFile = static_cast<QTSSFile*>(inFileObject);
@@ -450,7 +450,7 @@ QTSS_Error QTSSCallbacks::QTSS_CloseFileObject(QTSS_Object inFileObject)
 
 QTSS_Error QTSSCallbacks::QTSS_CreateStreamFromSocket(int inFileDesc, QTSS_StreamRef* outStream)
 {
-    if (outStream == nullptr)
+    if (outStream == NULL)
         return QTSS_BadArgument;
 
     if (inFileDesc < 0)
@@ -464,7 +464,7 @@ QTSS_Error QTSSCallbacks::QTSS_CreateStreamFromSocket(int inFileDesc, QTSS_Strea
 
 QTSS_Error QTSSCallbacks::QTSS_DestroySocketStream(QTSS_StreamRef inStream)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
 
     //
@@ -478,11 +478,11 @@ QTSS_Error QTSSCallbacks::QTSS_DestroySocketStream(QTSS_StreamRef inStream)
 QTSS_Error QTSSCallbacks::QTSS_AddService(const char* inServiceName, QTSS_ServiceFunctionPtr inFunctionPtr)
 {
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // This may happen if this callback is occurring on module-created thread
-    if (theState == nullptr)
+    if (theState == NULL)
         return QTSS_OutOfState;
 
     // Roles can only be added before modules have had their Initialize role invoked.
@@ -521,13 +521,13 @@ QTSS_Error QTSSCallbacks::QTSS_RequestEvent(QTSS_StreamRef inStream, QTSS_EventT
     // First thing to do is to alter the thread's module state to reflect the fact
     // that an event is outstanding.
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
-    if (theState == nullptr)
+    if (theState == NULL)
         return QTSS_RequestFailed;
 
-    if (theState->curTask == nullptr)
+    if (theState->curTask == NULL)
         return QTSS_OutOfState;
     ;
     theState->eventRequested = true;
@@ -541,11 +541,11 @@ QTSS_Error QTSSCallbacks::QTSS_RequestEvent(QTSS_StreamRef inStream, QTSS_EventT
 
 QTSS_Error QTSSCallbacks::QTSS_SignalStream(QTSS_StreamRef inStream)
 {
-    if (inStream == nullptr)
+    if (inStream == NULL)
         return QTSS_BadArgument;
 
     QTSSStream* theStream = static_cast<QTSSStream*>(inStream);
-    if (theStream->GetTask() != nullptr)
+    if (theStream->GetTask() != NULL)
         theStream->GetTask()->Signal(Task::kReadEvent);
     return QTSS_NoErr;
 }
@@ -553,14 +553,14 @@ QTSS_Error QTSSCallbacks::QTSS_SignalStream(QTSS_StreamRef inStream)
 QTSS_Error QTSSCallbacks::QTSS_SetIdleTimer(SInt64 inMsecToWait)
 {
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // This may happen if this callback is occurring on module-created thread
-    if (theState == nullptr)
+    if (theState == NULL)
         return QTSS_RequestFailed;
 
-    if (theState->curTask == nullptr)
+    if (theState->curTask == NULL)
         return QTSS_OutOfState;
 
     theState->eventRequested = true;
@@ -572,14 +572,14 @@ QTSS_Error QTSSCallbacks::QTSS_SetIdleRoleTimer(SInt64 inMsecToWait)
 {
 
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // This may happen if this callback is occurring on module-created thread
-    if (theState == nullptr)
+    if (theState == NULL)
         return QTSS_RequestFailed;
 
-    if (theState->curModule == nullptr)
+    if (theState->curModule == NULL)
         return QTSS_RequestFailed;
 
 
@@ -594,14 +594,14 @@ QTSS_Error QTSSCallbacks::QTSS_SetIdleRoleTimer(SInt64 inMsecToWait)
 QTSS_Error QTSSCallbacks::QTSS_RequestLockedCallback()
 {
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // This may happen if this callback is occurring on module-created thread
-    if (theState == nullptr)
+    if (theState == NULL)
         return QTSS_RequestFailed;
 
-    if (theState->curTask == nullptr)
+    if (theState->curTask == NULL)
         return QTSS_OutOfState;
 
     theState->globalLockRequested = true; //x
@@ -612,14 +612,14 @@ QTSS_Error QTSSCallbacks::QTSS_RequestLockedCallback()
 bool QTSSCallbacks::QTSS_IsGlobalLocked()
 {
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // This may happen if this callback is occurring on module-created thread
-    if (theState == nullptr)
+    if (theState == NULL)
         return false;
 
-    if (theState->curTask == nullptr)
+    if (theState->curTask == NULL)
         return false;
 
     return theState->isGlobalLocked;
@@ -628,14 +628,14 @@ bool QTSSCallbacks::QTSS_IsGlobalLocked()
 QTSS_Error QTSSCallbacks::QTSS_UnlockGlobalLock()
 {
     QTSS_ModuleState* theState = static_cast<QTSS_ModuleState*>(OSThread::GetMainThreadData());
-    if (OSThread::GetCurrent() != nullptr)
+    if (OSThread::GetCurrent() != NULL)
         theState = static_cast<QTSS_ModuleState*>(OSThread::GetCurrent()->GetThreadData());
 
     // This may happen if this callback is occurring on module-created thread
-    if (theState == nullptr)
+    if (theState == NULL)
         return QTSS_RequestFailed;
 
-    if (theState->curTask == nullptr)
+    if (theState->curTask == NULL)
         return QTSS_OutOfState;
 
     reinterpret_cast<Task*>(OSThread::GetCurrent())->GlobalUnlock();
@@ -658,11 +658,12 @@ void QTSSCallbacks::QTSS_UnlockStdLib()
 
 QTSS_Error QTSSCallbacks::Easy_SendMsg(Easy_HTTPSessionObject inHTTPSession, char* inMsg, UInt32 inMsgLen, bool connectionClose, bool decrement)
 {
-    if (inHTTPSession == nullptr)
+    if (inHTTPSession == NULL)
         return QTSS_BadArgument;
 
     HTTPSession* session = static_cast<HTTPSession*>(inHTTPSession);
     string theValue(inMsg, inMsgLen);
+	session->PostResponse(theValue, connectionClose);
 
-    return session->SendHTTPPacket(theValue, connectionClose, decrement);
+	return QTSS_NoErr;
 }

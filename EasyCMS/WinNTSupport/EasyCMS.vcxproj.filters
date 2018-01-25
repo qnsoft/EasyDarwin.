@@ -100,9 +100,15 @@
     <ClCompile Include="..\APIModules\EasyRedisModule\EasyRedisModule.cpp">
       <Filter>Source Files\API Modules\EasyRedisModule</Filter>
     </ClCompile>
+    <ClCompile Include="..\APIModules\EasyRedisModule\EasyRedisHandler.cpp">
+      <Filter>Source Files\API Modules\EasyRedisModule</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\APIModules\EasyRedisModule\EasyRedisModule.h">
+      <Filter>Source Files\API Modules\EasyRedisModule</Filter>
+    </ClInclude>
+    <ClInclude Include="..\APIModules\EasyRedisModule\EasyRedisHandler.h">
       <Filter>Source Files\API Modules\EasyRedisModule</Filter>
     </ClInclude>
   </ItemGroup>

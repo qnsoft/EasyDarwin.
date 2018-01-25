@@ -127,7 +127,7 @@ HTTPRequest::~HTTPRequest()
 	if (fHTTPHeader != NULL)
 	{
 		if (fHTTPHeader->Ptr != NULL)
-			delete fHTTPHeader->Ptr;
+			delete[] fHTTPHeader->Ptr;
 		delete fHTTPHeader;
 	}
 	if (fHTTPHeaderFormatter != NULL)
@@ -393,12 +393,14 @@ void HTTPRequest::putStatusLine(StringFormatter* putStream, HTTPStatusCode statu
 	putStream->PutEOL();
 }
 
-void HTTPRequest::putMethedLine(StringFormatter* putStream, HTTPMethod method,
-	HTTPVersion version)
+void HTTPRequest::putMethedLine(StringFormatter* putStream, StrPtrLen* url, HTTPMethod method, HTTPVersion version)
 {
 	putStream->Put(*(HTTPProtocol::GetMethodString(method)));
 	putStream->PutSpace();
-	putStream->Put("/");
+	if (url)
+		putStream->Put(*url);
+	else
+		putStream->Put(StrPtrLen("/"));
 	putStream->PutSpace();
 	putStream->Put(*(HTTPProtocol::GetVersionString(version)));
 	putStream->PutEOL();
@@ -420,7 +422,7 @@ bool HTTPRequest::CreateResponseHeader(HTTPStatusCode statusCode, HTTPVersion ve
 	if (fHTTPHeaderFormatter != NULL)
 	{
 		if (fHTTPHeader->Ptr != NULL)
-			delete fHTTPHeader->Ptr;
+			delete[] fHTTPHeader->Ptr;
 		delete fHTTPHeader;
 		delete fHTTPHeaderFormatter;
 	}
@@ -438,12 +440,21 @@ bool HTTPRequest::CreateResponseHeader(HTTPStatusCode statusCode, HTTPVersion ve
 	fHTTPHeader->Len = fHTTPHeaderFormatter->GetCurrentOffset();
 
 	//Access-Control-Allow-Origin: *
-	AppendResponseHeader(httpAccessControlAllowOriginHeader, &sAllString);
+    //AppendResponseHeader(httpAccessControlAllowOriginHeader, &sAllString);
+
+    StrPtrLen methods("POST,GET,OPTIONS,DELETE");
+    AppendResponseHeader(httpAccessControlAllowMethodsHeader, &methods);
+
+    StrPtrLen headers("X-Requested-With");
+    AppendResponseHeader(httpAccessControlAllowHeadersHeader, &headers);
+
+    StrPtrLen credentials("true");
+    AppendResponseHeader(httpAccessControlAllowCredentialsHeader, &credentials);
 
 	return true;
 }
 
-bool HTTPRequest::CreateRequestHeader(HTTPMethod method, HTTPVersion version)
+bool HTTPRequest::CreateRequestHeader(StrPtrLen* host, StrPtrLen* url, HTTPMethod method, HTTPVersion version)
 {
 	if (fHTTPType != httpRequestType) return false;
 
@@ -452,7 +463,7 @@ bool HTTPRequest::CreateRequestHeader(HTTPMethod method, HTTPVersion version)
 	if (fHTTPHeaderFormatter != NULL)
 	{
 		if (fHTTPHeader->Ptr != NULL)
-			delete fHTTPHeader->Ptr;
+			delete[] fHTTPHeader->Ptr;
 		delete fHTTPHeader;
 		delete fHTTPHeaderFormatter;
 	}
@@ -463,10 +474,15 @@ bool HTTPRequest::CreateRequestHeader(HTTPMethod method, HTTPVersion version)
 	fHTTPHeaderFormatter = new ResizeableStringFormatter(fHTTPHeader->Ptr, fHTTPHeader->Len);
 
 	//make a partial header for the given version and status code
-	putMethedLine(fHTTPHeaderFormatter, method, version);
+	putMethedLine(fHTTPHeaderFormatter, url, method, version);
 	Assert(fSvrHeader.Ptr != NULL);
 
-	AppendResponseHeader(httpUserAgentHeader, &fSvrHeader);
+	//AppendResponseHeader(httpUserAgentHeader, &fSvrHeader);
+	if (host && host->Len > 0)
+	{
+		AppendResponseHeader(httpHostHeader, host);
+	}
+
 	fHTTPHeader->Len = fHTTPHeaderFormatter->GetCurrentOffset();
 	return true;
 }

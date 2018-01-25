@@ -82,15 +82,15 @@ bool QTSSExpirationDate::IsSoftwareExpired()
 	if (expYear < 1998)
 		return true;
 
-	time_t theCurrentTime = ::time(nullptr);
+	time_t theCurrentTime = ::time(NULL);
 	Assert(theCurrentTime != -1);
 	if (theCurrentTime == -1)
 		return true;
 
 	struct tm  timeResult;
 	struct tm* theLocalTime = qtss_localtime(&theCurrentTime, &timeResult);
-	Assert(theLocalTime != nullptr);
-	if (theLocalTime == nullptr)
+	Assert(theLocalTime != NULL);
+	if (theLocalTime == NULL)
 		return true;
 
 	if (expYear > (theLocalTime->tm_year + 1900))

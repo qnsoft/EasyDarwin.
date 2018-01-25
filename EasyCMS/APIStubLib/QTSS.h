@@ -482,6 +482,9 @@ extern "C" {
 		Easy_RedisDelDevice_Role = FOUR_CHARS_TO_INT('d', 'd', 'n', 'r'),//ddnr
 		Easy_RedisTTL_Role = FOUR_CHARS_TO_INT('t', 't', 'l', 'r'),//ttlr
 		Easy_RedisGetEasyDarwin_Role = FOUR_CHARS_TO_INT('g', 'a', 'd', 'r'),//gadr
+
+		Easy_RedisLog_Role = FOUR_CHARS_TO_INT('r', 'd', 's', 'l'),//rdsl
+
 	};
 	typedef UInt32 QTSS_Role;
 
@@ -611,12 +614,19 @@ extern "C" {
 	{
 		char * outStreanID;
 		UInt32 inTimeoutMil;
-	}QTSS_GenStreamID_Params;
+	} QTSS_GenStreamID_Params;
 
 	typedef struct
 	{
 		UInt32						currentPlaying;
 	} QTSS_Sync_Params;
+
+	typedef struct
+	{
+		char*						serial;
+		unsigned int				channel;
+		char*						msg;
+	} QTSS_Log_Params;
 
 	typedef union
 	{
@@ -641,6 +651,9 @@ extern "C" {
 		QTSS_GetAssociatedDarwin_Params	    GetAssociatedDarwinParams;
 		QTSS_GetBestDarwin_Params			GetBestDarwinParams;
 		QTSS_GenStreamID_Params				GenStreamIDParams;
+
+		QTSS_Log_Params						logParams;
+
 	} QTSS_RoleParams, *QTSS_RoleParamPtr;
 
 

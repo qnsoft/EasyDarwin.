@@ -11,9 +11,8 @@
 #include "HTTPSessionInterface.h"
 
 #include "HTTPRequest.h"
-#include "TimeoutTask.h"
-#include "QTSSModule.h"
-#include "OSQueue.h"
+#include <QTSSModule.h>
+#include <boost/function.hpp>
 
 using namespace std;
 
@@ -23,16 +22,21 @@ public:
 	HTTPSession();
 	virtual ~HTTPSession();
 
-	QTSS_Error SendHTTPPacket(const string& msg, bool connectionClose, bool decrement);
+	void PostRequest(const string& msg, const string& uri = "/", const string& host = "");
+	void PostResponse(const string& msg, bool close = true);
 
-	string GetTalkbackSession() const { return talkbackSession; }
-	void SetTalkbackSession(const string& session) { talkbackSession = session; }
+	const string& GetTalkbackSession() const { return talkbackSession_; }
+	void SetTalkbackSession(const string& session) { talkbackSession_ = session; }
 
-	string GetDarwinHTTPPort() const { return darwinHttpPort_; }
+	int GetDarwinHTTPPort() const { return darwinHttpPort_; }
+    strDevice* GetDeviceInfo() const { return device_; }
+
+    Easy_SessionType GetSessionType() const { return sessionType_; }
 
 private:
-	SInt64 Run() override;
+	virtual SInt64 Run();
 
+	QTSS_Error sendHTTPPacket(const string& msg);
 	// Does request prep & request cleanup, respectively
 	QTSS_Error setupRequest();
 	void cleanupRequest();
@@ -41,7 +45,7 @@ private:
 	QTSS_Error processRequest();
 	QTSS_Error execNetMsgErrorReqHandler(HTTPStatusCode errCode);
 	QTSS_Error execNetMsgDSRegisterReq(const char* json);
-	QTSS_Error execNetMsgDSPushStreamAck(const char* json) const;
+	QTSS_Error execNetMsgDSPushStreamAck(const char* json);
 	QTSS_Error execNetMsgCSFreeStreamReq(const char *json);
 	QTSS_Error execNetMsgDSStreamStopAck(const char* json) const;
 	QTSS_Error execNetMsgDSPostSnapReq(const char* json);
@@ -50,10 +54,14 @@ private:
 
 	QTSS_Error execNetMsgCSTalkbackControlReq(const char* json);
 	static QTSS_Error execNetMSGDSTalkbackControlAck(const char* json);
+	QTSS_Error execNetMSGDSSnapAck(const char* json);
 
 	QTSS_Error execNetMsgCSDeviceListReq(const char* json);
 	QTSS_Error execNetMsgCSCameraListReq(const char* json);
 
+    QTSS_Error snapHandler(const char* json);
+
+	QTSS_Error execNetMsgCSSnapReqRESTful(const char* queryString);
 	QTSS_Error execNetMsgCSStartStreamReqRESTful(const char* queryString);
 	QTSS_Error execNetMsgCSStopStreamReqRESTful(const char* queryString);
 	QTSS_Error execNetMsgCSGetDeviceListReqRESTful(const char* queryString);
@@ -64,7 +72,9 @@ private:
 	QTSS_Error execNetMsgCSGetBaseConfigReqRESTful(const char* queryString);
 	QTSS_Error execNetMsgCSSetBaseConfigReqRESTful(const char* queryString);
 
-	static QTSS_Error execNetMsgCSRestartReqRESTful(const char* queryString);
+	QTSS_Error execNetMsgCSGetServerInfoReqRESTful(const char* queryString);
+
+	QTSS_Error execNetMsgCSRestartReqRESTful(const char* queryString);
 
 	QTSS_Error execNetMsgCSGetUsagesReqRESTful(const char* queryString);
 
@@ -74,10 +84,14 @@ private:
 	static bool overMaxConnections(UInt32 buffer);
 
 	void addDevice() const;
+    void unRegDevSession() const;
 
-	HTTPRequest* fRequest;
-	OSMutex fReadMutex;
-	OSMutex fSendMutex;
+	void initHandlerMap();
+
+	void createApiHandler(const string& url, QTSS_Error(HTTPSession::*action)(const char*));
+	void createProtocolHandler(const string& url, QTSS_Error(HTTPSession::*action)(const char*));
+
+    void setChannelSnap(const string& url, const string& channel);
 
 	enum
 	{
@@ -93,16 +107,29 @@ private:
 	};
 
 	//UInt32 fCurrentModule;
-	UInt32 fState;
+    UInt32 state_;
+
+    HTTPRequest* request_;
+    OSMutex readMutex_;
+    OSMutex sendMutex_;
 
 	//QTSS_RoleParams     fRoleParams;//module param blocks for roles.
-	QTSS_ModuleState    fModuleState;
+	QTSS_ModuleState moduleState_;
 
-	string talkbackSession;
+    Easy_SessionType    sessionType_;	//普通socket,NVR,智能主机，摄像机
 
-	string darwinHttpPort_;
+	string talkbackSession_;
+
+	int darwinHttpPort_;
+
+	map<string, boost::function<QTSS_Error(const char*)> > handlerMap_;
+
+    strDevice* device_;
+
+    char* requestBody_;
+
+	UInt32 contentOffset_;
 
 };
 
 #endif // __HTTP_SESSION_H__
-

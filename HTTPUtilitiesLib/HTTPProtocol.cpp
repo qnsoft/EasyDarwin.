@@ -129,7 +129,12 @@ StrPtrLen HTTPProtocol::sHeaders[] =
 	StrPtrLen("X-SessionCookie"),
 	StrPtrLen("X-Server-IP-Address"),
 
-	StrPtrLen("Access-Control-Allow-Origin"),
+    StrPtrLen("Access-Control-Allow-Origin"),
+    StrPtrLen("Access-Control-Allow-Credentials"),
+    StrPtrLen("Access-Control-Allow-Methods"),
+    StrPtrLen("Access-Control-Allow-Headers"),
+    StrPtrLen("Set-Cookie"),
+    StrPtrLen("Origin"),
 
 	StrPtrLen("Cookie"),
 

@@ -26,7 +26,7 @@ HTTPRequestStream::HTTPRequestStream(TCPSocket* sock)
 	fCurOffset(0),
 	fEncodedBytesRemaining(0),
 	fRequest(fRequestBuffer, 0),
-	fRequestPtr(nullptr),
+	fRequestPtr(NULL),
 	fDecode(false),
 	fIsDataPacket(false),
 	fPrintMSG(false)
@@ -36,7 +36,7 @@ void HTTPRequestStream::SnarfRetreat(HTTPRequestStream &fromRequest)
 {
 	// Simplest thing to do is to just completely blow away everything in this current
 	// stream, and replace it with the retreat bytes from the other stream.
-	fRequestPtr = nullptr;
+	fRequestPtr = NULL;
 	Assert(fRetreatBytes < EASY_REQUEST_BUFFER_SIZE_LEN);
 	fRetreatBytes = fromRequest.fRetreatBytes;
 	fEncodedBytesRemaining = fCurOffset = fRequest.Len = 0;
@@ -53,9 +53,9 @@ QTSS_Error HTTPRequestStream::ReadRequest()
 		//with the request and want to move onto the next one. The first thing we should do
 		//is check whether there is any lingering(¶ºÁôµÄ) data in the stream. If there is, the parent
 		//session believes that is part of a new request
-		if (fRequestPtr != nullptr)
+		if (fRequestPtr != NULL)
 		{
-			fRequestPtr = nullptr;//flag that we no longer have a complete request
+			fRequestPtr = NULL;//flag that we no longer have a complete request
 
 			// Take all the retreated leftover data and move it to the beginning of the buffer
 			if ((fRetreatBytes > 0) && (fRequest.Len > 0))
@@ -160,28 +160,28 @@ QTSS_Error HTTPRequestStream::ReadRequest()
 			DateTranslator::UpdateDateBuffer(&theDate, 0); // get the current GMT date and time
 			qtss_printf("\n\n#C->S:\n#time: ms=%" _U32BITARG_ " date=%s\n", static_cast<UInt32>(OS::StartTimeMilli_Int()), theDate.GetDateBuffer());
 
-			if (fSocket != nullptr)
+			if (fSocket != NULL)
 			{
 				UInt16 serverPort = fSocket->GetLocalPort();
 				UInt16 clientPort = fSocket->GetRemotePort();
 				StrPtrLen* theLocalAddrStr = fSocket->GetLocalAddrStr();
 				StrPtrLen* theRemoteAddrStr = fSocket->GetRemoteAddrStr();
-				if (theLocalAddrStr != nullptr)
+				if (theLocalAddrStr != NULL)
 				{
 					qtss_printf("#server: ip="); theLocalAddrStr->PrintStr(); qtss_printf(" port=%u\n", serverPort);
 				}
 				else
 				{
-					qtss_printf("#server: ip=nullptr port=%u\n", serverPort);
+					qtss_printf("#server: ip=NULL port=%u\n", serverPort);
 				}
 
-				if (theRemoteAddrStr != nullptr)
+				if (theRemoteAddrStr != NULL)
 				{
 					qtss_printf("#client: ip="); theRemoteAddrStr->PrintStr(); qtss_printf(" port=%u\n", clientPort);
 				}
 				else
 				{
-					qtss_printf("#client: ip=nullptr port=%u\n", clientPort);
+					qtss_printf("#client: ip=NULL port=%u\n", clientPort);
 				}
 
 			}
@@ -196,7 +196,7 @@ QTSS_Error HTTPRequestStream::ReadRequest()
 		StringParser headerParser(&fRequest);
 
 		UInt16 lcount = 0;
-		while (headerParser.GetThruEOL(nullptr))
+		while (headerParser.GetThruEOL(NULL))
 		{
 			lcount++;
 			if (headerParser.ExpectEOL())
@@ -281,7 +281,7 @@ QTSS_Error HTTPRequestStream::Read(void* ioBuffer, UInt32 inBufLen, UInt32* outL
 	// If there is still space available in ioBuffer, continue. Otherwise, we can return now
 	if (theLengthRead == inBufLen)
 	{
-		if (outLengthRead != nullptr)
+		if (outLengthRead != NULL)
 			*outLengthRead = theLengthRead;
 		return QTSS_NoErr;
 	}
@@ -293,7 +293,7 @@ QTSS_Error HTTPRequestStream::Read(void* ioBuffer, UInt32 inBufLen, UInt32* outL
 #if READ_DEBUGGING
 	qtss_printf("In HTTPRequestStream::Read: Got %d bytes off Socket\n", theNewOffset);
 #endif  
-	if (outLengthRead != nullptr)
+	if (outLengthRead != NULL)
 		*outLengthRead = theNewOffset + theLengthRead;
 
 	return theErr;
@@ -312,7 +312,7 @@ QTSS_Error HTTPRequestStream::decodeIncomingData(char* inSrcData, UInt32 inSrcDa
 	// We always decode up through the last chunk of 4.
 	fEncodedBytesRemaining = inSrcDataLen & 3;
 
-	// Let our friendly Base64Decode function know this by nullptr terminating at that point
+	// Let our friendly Base64Decode function know this by NULL terminating at that point
 	UInt32 bytesToDecode = inSrcDataLen - fEncodedBytesRemaining;
 	char endChar = inSrcData[bytesToDecode];
 	inSrcData[bytesToDecode] = '\0';

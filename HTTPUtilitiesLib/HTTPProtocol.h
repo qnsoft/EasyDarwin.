@@ -143,12 +143,17 @@ enum
 	httpSessionCookieHeader = 47,
 	httpServerIPAddressHeader = 48,
 
-	httpAccessControlAllowOriginHeader = 49,
+    httpAccessControlAllowOriginHeader = 49,
+    httpAccessControlAllowCredentialsHeader = 50,
+    httpAccessControlAllowMethodsHeader = 51,
+    httpAccessControlAllowHeadersHeader = 52,
+    httpSetCookieHeader = 53,
+    httpOriginHeader = 54,
 
-	httpCookieHeader = 50,
+	httpCookieHeader = 55,
 
-	httpNumHeaders = 51,
-	httpIllegalHeader = 51
+	httpNumHeaders = 56,
+	httpIllegalHeader = 57
 };
 typedef UInt32 HTTPHeader;
 

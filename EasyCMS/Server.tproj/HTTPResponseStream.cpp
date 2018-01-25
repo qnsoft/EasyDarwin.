@@ -79,7 +79,7 @@ QTSS_Error HTTPResponseStream::WriteV(iovec* inVec, UInt32 inNumVectors, UInt32 
 
 	// theLengthSent at this point is the amount of data passed into
 	// this function that was sent.
-	if (outLengthSent != nullptr)
+	if (outLengthSent != NULL)
 		*outLengthSent = theLengthSent;
 
 	// Update the StringFormatter fBytesWritten variable... this data
@@ -103,7 +103,7 @@ QTSS_Error HTTPResponseStream::WriteV(iovec* inVec, UInt32 inNumVectors, UInt32 
 	// buffer.
 
 	// The caller should consider this data sent.
-	if (outLengthSent != nullptr)
+	if (outLengthSent != NULL)
 		*outLengthSent = inTotalLength;
 
 	UInt32 curVec = 1;

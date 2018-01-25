@@ -17,6 +17,8 @@
       <logicalFolder name="EasyRedisModule"
                      displayName="EasyRedisModule"
                      projectFiles="true">
+        <itemPath>APIModules/EasyRedisModule/EasyRedisHandler.cpp</itemPath>
+        <itemPath>APIModules/EasyRedisModule/EasyRedisHandler.h</itemPath>
         <itemPath>APIModules/EasyRedisModule/EasyRedisModule.cpp</itemPath>
         <itemPath>APIModules/EasyRedisModule/EasyRedisModule.h</itemPath>
       </logicalFolder>
@@ -196,6 +198,16 @@
       </item>
       <item path="APICommonCode/QTSSRollingLog.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="APIModules/EasyRedisModule/EasyRedisHandler.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="APIModules/EasyRedisModule/EasyRedisHandler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
       <item path="APIModules/EasyRedisModule/EasyRedisModule.cpp"
             ex="false"
             tool="1"
@@ -334,7 +346,7 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <standard>8</standard>
+          <standard>4</standard>
           <incDir>
             <pElem>APICommonCode</pElem>
             <pElem>APIStubLib</pElem>
@@ -366,10 +378,10 @@
             <pElem>../CommonUtilitiesLib/${CND_CONF}</pElem>
             <pElem>../EasyProtocol/EasyProtocol/${CND_CONF}</pElem>
             <pElem>../EasyProtocol/jsoncpp/${CND_CONF}</pElem>
-            <pElem>../Lib/boost/i386</pElem>
+            <pElem>../Lib/i386</pElem>
             <pElem>../EasyRedisClient/${CND_CONF}</pElem>
           </linkerAddLib>
-          <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lboost_system -lboost_thread -lrt -leasyredisclient -lz -lbz2</commandLine>
+          <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lboost_system -lboost_thread -lrt -leasyredisclient</commandLine>
         </linkerTool>
       </compileType>
       <item path="../HTTPUtilitiesLib/HTTPProtocol.cpp"
@@ -403,6 +415,16 @@
       <item path="APICommonCode/QTSSRollingLog.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="APICommonCode/QTSSRollingLog.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="APIModules/EasyRedisModule/EasyRedisHandler.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="APIModules/EasyRedisModule/EasyRedisHandler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="APIModules/EasyRedisModule/EasyRedisModule.cpp"
             ex="false"
@@ -542,7 +564,7 @@
         </cTool>
         <ccTool>
           <developmentMode>5</developmentMode>
-          <standard>8</standard>
+          <standard>4</standard>
           <incDir>
             <pElem>APICommonCode</pElem>
             <pElem>APIStubLib</pElem>
@@ -573,7 +595,7 @@
             <pElem>../CommonUtilitiesLib/${CND_CONF}</pElem>
             <pElem>../EasyProtocol/EasyProtocol/${CND_CONF}</pElem>
             <pElem>../EasyProtocol/jsoncpp/${CND_CONF}</pElem>
-            <pElem>../Lib/boost/x64</pElem>
+            <pElem>../Lib/x64</pElem>
             <pElem>../EasyRedisClient/${CND_CONF}</pElem>
           </linkerAddLib>
           <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lboost_system -lboost_thread -lrt -leasyredisclient</commandLine>
@@ -610,6 +632,16 @@
       <item path="APICommonCode/QTSSRollingLog.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="APICommonCode/QTSSRollingLog.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="APIModules/EasyRedisModule/EasyRedisHandler.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="APIModules/EasyRedisModule/EasyRedisHandler.h"
+            ex="false"
+            tool="3"
+            flavor2="0">
       </item>
       <item path="APIModules/EasyRedisModule/EasyRedisModule.cpp"
             ex="false"

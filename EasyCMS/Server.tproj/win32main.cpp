@@ -43,11 +43,11 @@
 
  // Data
 static FilePrefsSource sPrefsSource(true); // Allow dups
-static XMLPrefsParser* sXMLParser = nullptr;
+static XMLPrefsParser* sXMLParser = NULL;
 static FilePrefsSource sMessagesSource;
 static UInt16 sPort = 0; //port can be set on the command line
 static int sStatsUpdateInterval = 0;
-static SERVICE_STATUS_HANDLE sServiceStatusHandle = nullptr;
+static SERVICE_STATUS_HANDLE sServiceStatusHandle = NULL;
 static QTSS_ServerState sInitialState = qtssRunningState;
 
 // Functions

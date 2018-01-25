@@ -151,7 +151,7 @@ class RereadPrefsTask : public Task
 public:
 	virtual SInt64 Run()
 	{
-		QTSServer::RereadPrefsService(nullptr);
+		QTSServer::RereadPrefsService(NULL);
 		return -1;
 	}
 };

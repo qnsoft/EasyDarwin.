@@ -89,26 +89,26 @@ public:
 
 	char*   GetErrorLogDir()
 	{
-		return this->getStringPref(qtssPrefsErrorLogDir);
+		return this->GetStringPref(qtssPrefsErrorLogDir);
 	}
 	char*   GetErrorLogName()
 	{
-		return this->getStringPref(qtssPrefsErrorLogName);
+		return this->GetStringPref(qtssPrefsErrorLogName);
 	}
 
 	char*   GetModuleDirectory()
 	{
-		return this->getStringPref(qtssPrefsModuleFolder);
+		return this->GetStringPref(qtssPrefsModuleFolder);
 	}
 
 	char*   GetPidFilePath()
 	{
-		return this->getStringPref(qtssPrefsPidFile);
+		return this->GetStringPref(qtssPrefsPidFile);
 	}
 
 	char*   GetStatsMonitorFileName()
 	{
-		return this->getStringPref(qtssPrefsMonitorStatsFileName);
+		return this->GetStringPref(qtssPrefsMonitorStatsFileName);
 	}
 
 	bool ServerStatFileEnabled() { return fEnableMonitorStatsFile; }
@@ -120,16 +120,16 @@ public:
 	UInt16  GetServiceLANPort() { return fMonitorLANPort; }
 	UInt16  GetServiceWANPort() { return fMonitorWANPort; }
 
-	char*	GetServiceWANIP() { return this->getStringPref(qtssPrefsServiceWANIPAddr); }
+	char*	GetServiceWANIP() { return this->GetStringPref(qtssPrefsServiceWANIPAddr); }
 
-	char*	GetSnapLocalPath() { return this->getStringPref(qtssPrefsSnapLocalPath); }
-	char*	GetSnapWebPath() { return this->getStringPref(qtssPrefsSnapWebPath); }
+	char*	GetSnapLocalPath() { return this->GetStringPref(qtssPrefsSnapLocalPath); }
+	char*	GetSnapWebPath() { return this->GetStringPref(qtssPrefsSnapWebPath); }
 private:
-	void setupAttributes();
+	void SetupAttributes();
 
 	// Returns the string preference with the specified ID. If there
 	// was any problem, this will return an empty string.
-	char* getStringPref(QTSS_AttributeID inAttrID);
+	char* GetStringPref(QTSS_AttributeID inAttrID);
 
 	UInt32      fSessionTimeoutInSecs;
 

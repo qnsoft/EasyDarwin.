@@ -223,7 +223,7 @@
     <ClCompile>
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>../;../../Include/;../../EasyProtocol/jsoncpp/include/;../../EasyProtocol/Include/;../../CommonUtilitiesLib/;../../redis/;../../HTTPUtilitiesLib/;../Server.tproj/;../PrefsSourceLib/;../APIStubLib/;../APICommonCode/;../APIModules/QTSSPosixFileSysModule/;../APIModules/EasyAuthModule/;../APIModules/EasyRedisModule/;../../EasyRedisClient/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;../../Include/FFmpeg/;../../Include/;../../EasyProtocol/jsoncpp/include/;../../EasyProtocol/Include/;../../CommonUtilitiesLib/;../../redis/;../../HTTPUtilitiesLib/;../Server.tproj/;../PrefsSourceLib/;../APIStubLib/;../APICommonCode/;../APIModules/QTSSPosixFileSysModule/;../APIModules/EasyAuthModule/;../APIModules/EasyRedisModule/;../../EasyRedisClient/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_CONSOLE;DSS_USE_API_CALLBACKS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -261,6 +261,7 @@
     <ClCompile Include="..\..\CommonUtilitiesLib\OSRefTableEx.cpp" />
     <ClCompile Include="..\..\HTTPUtilitiesLib\HTTPProtocol.cpp" />
     <ClCompile Include="..\..\HTTPUtilitiesLib\HTTPRequest.cpp" />
+    <ClCompile Include="..\APIModules\EasyRedisModule\EasyRedisHandler.cpp" />
     <ClCompile Include="..\APIModules\EasyRedisModule\EasyRedisModule.cpp" />
     <ClCompile Include="..\PrefsSourceLib\FilePrefsSource.cpp" />
     <ClCompile Include="..\PrefsSourceLib\XMLParser.cpp" />
@@ -316,6 +317,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\APIModules\EasyRedisModule\EasyRedisHandler.h" />
     <ClInclude Include="..\APIModules\EasyRedisModule\EasyRedisModule.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

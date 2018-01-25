@@ -141,10 +141,10 @@ char* QTSSMessages::sMessages[] =
 void QTSSMessages::Initialize()
 {
 	QTSSDictionaryMap* theMap = QTSSDictionaryMap::GetMap(QTSSDictionaryMap::kTextMessagesDictIndex);
-	Assert(theMap != nullptr);
+	Assert(theMap != NULL);
 
 	for (UInt32 x = 0; x < qtssMsgNumParams; x++)
-		theMap->SetAttribute(x, sMessagesKeyStrings[x], nullptr, qtssAttrDataTypeCharArray, qtssAttrModeRead | qtssAttrModePreempSafe);
+		theMap->SetAttribute(x, sMessagesKeyStrings[x], NULL, qtssAttrDataTypeCharArray, qtssAttrModeRead | qtssAttrModePreempSafe);
 }
 
 QTSSMessages::QTSSMessages(PrefsSource* inMessages)

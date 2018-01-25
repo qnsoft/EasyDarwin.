@@ -20,16 +20,13 @@
 #include "QTSS.h"
 #include "QTSSDictionary.h"
 #include "atomic.h"
-#include <string>
 
-#include "OSRefTableEx.h"
-#include "EasyProtocolDef.h"
 #include "EasyProtocol.h"
 
 using namespace EasyDarwin::Protocol;
 using namespace std;
 
-class HTTPSessionInterface : public QTSSDictionary, public Task
+class HTTPSessionInterface : public Task
 {
 public:
 
@@ -52,7 +49,7 @@ public:
     // object holders is > 0, the RTSPSession will NEVER go away. However,
     // the object managing the session should be aware that if IsLiveSession returns
     // false it may be wise to relinquish control of the session
-	void IncrementObjectHolderCount() { /*(void)atomic_add(&fObjectHolders, 1);*/ ++fObjectHolders; }
+	void IncrementObjectHolderCount() { (void)atomic_add(&fObjectHolders, 1);; }
     void DecrementObjectHolderCount();
 
     //Two main things are persistent through the course of a session, not
@@ -63,7 +60,7 @@ public:
     TCPSocket*          GetSocket() { return &fSocket; }
     OSMutex*            GetSessionMutex() { return &fSessionMutex; }
 
-    UInt32              GetSessionIndex() { return fSessionIndex; }
+    UInt32              GetSessionIndex() const { return fSessionIndex; }
 
     // Request Body Length
     // This object can enforce a length of the request body to prevent callers
@@ -71,10 +68,7 @@ public:
     // -1 is an unknown request body length. If the body length is unknown,
     // this object will do no length enforcement. 
     void                SetRequestBodyLength(SInt32 inLength) { fRequestBodyLen = inLength; }
-    SInt32              GetRemainingReqBodyLen() { return fRequestBodyLen; }
-
-    QTSS_Error UpdateDevSnap(const char* inSnapTime, const char* inSnapJpg) const;
-    void UnRegDevSession() const;
+    SInt32              GetRemainingReqBodyLen() const { return fRequestBodyLen; }
 
     // QTSS STREAM FUNCTIONS
 
@@ -86,7 +80,6 @@ public:
     virtual QTSS_Error Read(void* ioBuffer, UInt32 inLength, UInt32* outLenRead);
     virtual QTSS_Error RequestEvent(QTSS_EventType inEventMask);
 
-    shared_ptr<strDevice> GetDeviceInfo() { return device_; }
     UInt32 GetCSeq() { OSMutexLocker MutexLocker(&fMutexCSeq); return fCSeq++; }
 
     enum
@@ -95,21 +88,19 @@ public:
         kMaxUserPasswordLen = 32
     };
 
-    //void PushNVRMessage(EasyNVRMessage &msg) { fNVRMessageQueue.push_back(msg); }
-
-	Easy_SessionType GetSessionType() { return fSessionType; }
+	string GetSessionID() const { return sessionId_; }
 
 protected:
     void        snarfInputSocket(HTTPSessionInterface* fromRTSPSession);
     // Dictionary support Param retrieval function
-    static void*        setupParams(QTSSDictionary* inSession, UInt32* outLen);
+    //static void*        setupParams(QTSSDictionary* inSession, UInt32* outLen);
 
     enum
     {
         kFirstHTTPSessionID = 1,    //UInt32
     };
 
-	string              sessionId_;;
+	string              sessionId_;
 
     TimeoutTask         fTimeoutTask;//allows the session to be timed out
 
@@ -123,11 +114,9 @@ protected:
     TCPSocket*          fOutputSocketP;
     TCPSocket*          fInputSocketP;  // <-- usually same as fSocketP, unless we're HTTP Proxying
 
-
-    Easy_SessionType    fSessionType;	//普通socket,NVR,智能主机，摄像机
     //UInt32				fTerminalType;	//终端类型ARM、PC、Android、IOS
 
-    bool              fLiveSession;
+    bool				fLiveSession;
     unsigned int        fObjectHolders;
 
     UInt32              fSessionIndex;
@@ -141,16 +130,6 @@ protected:
     bool				fAuthenticated;
 
     static unsigned int		sSessionIndexCounter;
-
-    static QTSSAttrInfoDict::AttrInfo   sAttributes[];
-
-#define CliStartStreamTimeout	30000//客户端开始流超时时间，单位为ms
-#define CliSNapShotTimeout		30000//客户端抓拍超时时间，单位为ms  
-#define SessionIDTimeout		30000//sessionID在redis上的存活时间，单位为ms
-
-    shared_ptr<strDevice> device_;//add,存储设备信息，仅当Session类型是设备时有效
-
-    char* fRequestBody;//存储请求的数据部分
 
     OSMutex fMutexCSeq;//fCSeq互斥操作实现，因为可能多个线程同时fCSeq++,和MsgMap共同使用一个互斥量
     UInt32 fCSeq;//当前Session向对方发送请求时，fCSeq每次加1

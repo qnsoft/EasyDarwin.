@@ -122,7 +122,7 @@ QTSS_Error QTSSDataConverter::StringToValue(char* inValueAsString,
     void* ioBuffer,
     UInt32* ioBufSize)
 {
-    if (inValueAsString == nullptr || ioBufSize == nullptr)
+    if (inValueAsString == NULL || ioBufSize == NULL)
         return QTSS_BadArgument;
 
     if (inType == qtssAttrDataTypeCharArray)
@@ -134,7 +134,7 @@ QTSS_Error QTSSDataConverter::StringToValue(char* inValueAsString,
 
         //
         // First check to see if the destination is big enough
-        if ((ioBuffer == nullptr) || (*ioBufSize < theLen))
+        if ((ioBuffer == NULL) || (*ioBufSize < theLen))
         {
             *ioBufSize = theLen;
             return QTSS_NotEnoughSpace;
@@ -241,7 +241,7 @@ QTSS_Error QTSSDataConverter::StringToValue(char* inValueAsString,
         return ConvertCHexStringToBytes(inValueAsString, ioBuffer, ioBufSize);
     }
 
-    if ((ioBuffer == nullptr) || (*ioBufSize < theBufSize))
+    if ((ioBuffer == NULL) || (*ioBufSize < theBufSize))
     {
         *ioBufSize = theBufSize;
         return QTSS_NotEnoughSpace;
@@ -260,7 +260,7 @@ QTSS_Error QTSSDataConverter::ConvertCHexStringToBytes(char* inValueAsString,
     UInt32 dataLen = (stringLen + (stringLen & 1 ? 1 : 0)) / 2;
 
     // First check to see if the destination is big enough
-    if ((ioBuffer == nullptr) || (*ioBufSize < dataLen))
+    if ((ioBuffer == NULL) || (*ioBufSize < dataLen))
     {
         *ioBufSize = dataLen;
         return QTSS_NotEnoughSpace;
@@ -289,7 +289,7 @@ char* QTSSDataConverter::ConvertBytesToCHexString(void* inValue, const UInt32 in
 
     char *theString = new char[len + 1];
     char *resultStr = theString;
-    if (theString != nullptr)
+    if (theString != NULL)
     {
         UInt8 temp;
         for (UInt32 count = 0; count < inValueLen; ++count)
@@ -307,8 +307,8 @@ char* QTSSDataConverter::ValueToString(void* inValue,
     const UInt32 inValueLen,
     const QTSS_AttrDataType inType)
 {
-    if (inValue == nullptr)
-        return nullptr;
+    if (inValue == NULL)
+        return NULL;
 
     if (inType == qtssAttrDataTypeCharArray)
     {

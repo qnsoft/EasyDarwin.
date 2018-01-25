@@ -40,6 +40,7 @@
 #include "QTSSDataConverter.h"
 #include "defaultPaths.h"
 #include "QTSSRollingLog.h"
+#include "QTSSMemoryDeleter.h"
 #include "OS.h"
 
 #ifndef __Win32__
@@ -51,68 +52,68 @@
 
 QTSServerPrefs::PrefInfo QTSServerPrefs::sPrefInfo[] =
 {
-	{ kDontAllowMultipleValues, "90",      nullptr                     },  //0 http_session_timeout
-	{ kDontAllowMultipleValues, "1000",     nullptr                    },  //1 maximum_connections
-	{ kAllowMultipleValues,     "0",        nullptr                    },  //2 bind_ip_addr
-	{ kDontAllowMultipleValues, "false",    nullptr                    },  //3 break_on_assert
-	{ kDontAllowMultipleValues, "true",     nullptr                    },  //4 auto_restart
-	{ kDontAllowMultipleValues,	DEFAULTPATHS_SSM_DIR,	nullptr		},	//5 module_folder
-	{ kDontAllowMultipleValues, "Error",    nullptr                    },  //6 error_logfile_name
-	{ kDontAllowMultipleValues,	DEFAULTPATHS_LOG_DIR,	nullptr		},	//7 error_logfile_dir
-	{ kDontAllowMultipleValues, "7",        nullptr                    },  //8 error_logfile_interval
-	{ kDontAllowMultipleValues, "256000",   nullptr                    },  //9 error_logfile_size
-	{ kDontAllowMultipleValues, "2",        nullptr                    },  //10 error_logfile_verbosity
-	{ kDontAllowMultipleValues, "true",     nullptr                    },  //11 screen_logging
-	{ kDontAllowMultipleValues, "true",     nullptr                    },  //12 error_logging
-	{ kDontAllowMultipleValues, "./snap/",	nullptr					},  //13 snap_local_path
-	{ kDontAllowMultipleValues, "http://snap.easydarwin.org/", nullptr },  //14 snap_web_path
-	{ kDontAllowMultipleValues, "false",    nullptr                    },  //15 auto_start
-	{ kDontAllowMultipleValues, "false",    nullptr                    },  //16 MSG_debug_printfs
-	{ kDontAllowMultipleValues, "false",    nullptr                    },  //17 enable_monitor_stats_file
-	{ kDontAllowMultipleValues, "10",       nullptr                    },  //18 monitor_stats_file_interval_seconds
-	{ kDontAllowMultipleValues, "server_status",        nullptr        },  //19 monitor_stats_file_name
-	{ kDontAllowMultipleValues, "0",        nullptr                    },  //20 run_num_threads
-	{ kDontAllowMultipleValues, DEFAULTPATHS_PID_DIR "easycms" ".pid",	nullptr	},	//21 pid_file
-	{ kDontAllowMultipleValues, "false",    nullptr                    },  //22 force_logs_close_on_write
-	{ kDontAllowMultipleValues, "10000",    nullptr                     }, //23 service_lan_port
-	{ kDontAllowMultipleValues, "10000",    nullptr                     }, //24 service_wan_port
-	{ kDontAllowMultipleValues, "0.0.0.0",  nullptr                     }, //25 service_wan_ip
-	{ kDontAllowMultipleValues, "2",        nullptr                     }  //26 run_num_msg_threads
+	{ kDontAllowMultipleValues, "90",      NULL                     },  //0 http_session_timeout
+	{ kDontAllowMultipleValues, "1000",     NULL                    },  //1 maximum_connections
+	{ kAllowMultipleValues,     "0",        NULL                    },  //2 bind_ip_addr
+	{ kDontAllowMultipleValues, "false",    NULL                    },  //3 break_on_assert
+	{ kDontAllowMultipleValues, "true",     NULL                    },  //4 auto_restart
+	{ kDontAllowMultipleValues,	DEFAULTPATHS_SSM_DIR,	NULL		},	//5 module_folder
+	{ kDontAllowMultipleValues, "Error",    NULL                    },  //6 error_logfile_name
+	{ kDontAllowMultipleValues,	DEFAULTPATHS_LOG_DIR,	NULL		},	//7 error_logfile_dir
+	{ kDontAllowMultipleValues, "7",        NULL                    },  //8 error_logfile_interval
+	{ kDontAllowMultipleValues, "256000",   NULL                    },  //9 error_logfile_size
+	{ kDontAllowMultipleValues, "2",        NULL                    },  //10 error_logfile_verbosity
+	{ kDontAllowMultipleValues, "true",     NULL                    },  //11 screen_logging
+	{ kDontAllowMultipleValues, "true",     NULL                    },  //12 error_logging
+	{ kDontAllowMultipleValues, "./snap/",	NULL					},  //13 snap_local_path
+	{ kDontAllowMultipleValues, "http://snap.easydarwin.org/", NULL },  //14 snap_web_path
+	{ kDontAllowMultipleValues, "false",    NULL                    },  //15 auto_start
+	{ kDontAllowMultipleValues, "false",    NULL                    },  //16 MSG_debug_printfs
+	{ kDontAllowMultipleValues, "false",    NULL                    },  //17 enable_monitor_stats_file
+	{ kDontAllowMultipleValues, "10",       NULL                    },  //18 monitor_stats_file_interval_seconds
+	{ kDontAllowMultipleValues, "server_status",        NULL        },  //19 monitor_stats_file_name
+	{ kDontAllowMultipleValues, "0",        NULL                    },  //20 run_num_threads
+	{ kDontAllowMultipleValues, DEFAULTPATHS_PID_DIR "easycms" ".pid",	NULL	},	//21 pid_file
+	{ kDontAllowMultipleValues, "false",    NULL                    },  //22 force_logs_close_on_write
+	{ kDontAllowMultipleValues, "10000",    NULL                     }, //23 service_lan_port
+	{ kDontAllowMultipleValues, "10000",    NULL                     }, //24 service_wan_port
+	{ kDontAllowMultipleValues, "0.0.0.0",  NULL                     }, //25 service_wan_ip
+	{ kDontAllowMultipleValues, "2",        NULL                     }  //26 run_num_msg_threads
 };
 
 QTSSAttrInfoDict::AttrInfo  QTSServerPrefs::sAttributes[] =
 {   /*fields:   fAttrName, fFuncPtr, fAttrDataType, fAttrPermission */
-	/* 0 */ { "http_session_timeout",						nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 1 */ { "maximum_connections",                    nullptr,                   qtssAttrDataTypeSInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 2 */ { "bind_ip_addr",                           nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 3 */ { "break_on_assert",                        nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 4 */ { "auto_restart",                           nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 5 */ { "module_folder",                          nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 6 */ { "error_logfile_name",                     nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 7 */ { "error_logfile_dir",                      nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 8 */ { "error_logfile_interval",                nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 9 */ { "error_logfile_size",                    nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 10 */ { "error_logfile_verbosity",               nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 11 */ { "screen_logging",                        nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 12 */ { "error_logging",                         nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 13 */ { "snap_local_path",						nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 14 */ { "snap_web_path",							nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 15 */ { "auto_start",                            nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 16 */ { "MSG_debug_printfs",						nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 17 */ { "enable_monitor_stats_file",             nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 18 */ { "monitor_stats_file_interval_seconds",   nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 19 */ { "monitor_stats_file_name",               nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 20 */ { "run_num_threads",                       nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 21 */ { "pid_file",								nullptr,					qtssAttrDataTypeCharArray,	qtssAttrModeRead | qtssAttrModeWrite },
-	/* 22 */ { "force_logs_close_on_write",             nullptr,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 23 */ { "service_lan_port",						nullptr,					qtssAttrDataTypeUInt16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 24 */ { "service_wan_port",						nullptr,					qtssAttrDataTypeUInt16,     qtssAttrModeRead | qtssAttrModeWrite },
-	/* 25 */ { "service_wan_ip",						nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-	/* 26 */ { "run_num_msg_threads",					nullptr,					qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite }
+	/* 0 */ { "http_session_timeout",						NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 1 */ { "maximum_connections",                    NULL,                   qtssAttrDataTypeSInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 2 */ { "bind_ip_addr",                           NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 3 */ { "break_on_assert",                        NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 4 */ { "auto_restart",                           NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 5 */ { "module_folder",                          NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 6 */ { "error_logfile_name",                     NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 7 */ { "error_logfile_dir",                      NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 8 */ { "error_logfile_interval",                NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 9 */ { "error_logfile_size",                    NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 10 */ { "error_logfile_verbosity",               NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 11 */ { "screen_logging",                        NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 12 */ { "error_logging",                         NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 13 */ { "snap_local_path",						NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 14 */ { "snap_web_path",							NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 15 */ { "auto_start",                            NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 16 */ { "MSG_debug_printfs",						NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 17 */ { "enable_monitor_stats_file",             NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 18 */ { "monitor_stats_file_interval_seconds",   NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 19 */ { "monitor_stats_file_name",               NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 20 */ { "run_num_threads",                       NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 21 */ { "pid_file",								NULL,					qtssAttrDataTypeCharArray,	qtssAttrModeRead | qtssAttrModeWrite },
+	/* 22 */ { "force_logs_close_on_write",             NULL,                   qtssAttrDataTypeBool16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 23 */ { "service_lan_port",						NULL,					qtssAttrDataTypeUInt16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 24 */ { "service_wan_port",						NULL,					qtssAttrDataTypeUInt16,     qtssAttrModeRead | qtssAttrModeWrite },
+	/* 25 */ { "service_wan_ip",						NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+	/* 26 */ { "run_num_msg_threads",					NULL,					qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite }
 };
 
 QTSServerPrefs::QTSServerPrefs(XMLPrefsParser* inPrefsSource, bool inWriteMissingPrefs)
-	: QTSSPrefs(inPrefsSource, nullptr, QTSSDictionaryMap::GetMap(QTSSDictionaryMap::kPrefsDictIndex), false),
+	: QTSSPrefs(inPrefsSource, NULL, QTSSDictionaryMap::GetMap(QTSSDictionaryMap::kPrefsDictIndex), false),
 	fSessionTimeoutInSecs(0),
 	fMaximumConnections(0),
 	fBreakOnAssert(false),
@@ -132,13 +133,8 @@ QTSServerPrefs::QTSServerPrefs(XMLPrefsParser* inPrefsSource, bool inWriteMissin
 	fMonitorLANPort(0),
 	fMonitorWANPort(0)
 {
-	setupAttributes();
+	SetupAttributes();
 	RereadServerPreferences(inWriteMissingPrefs);
-
-	char jpgDir[512] = { 0 };
-	qtss_sprintf(jpgDir, "%s", this->GetSnapLocalPath());
-	OS::RecursiveMakeDir(jpgDir);
-
 }
 
 void QTSServerPrefs::Initialize()
@@ -150,7 +146,7 @@ void QTSServerPrefs::Initialize()
 }
 
 
-void QTSServerPrefs::setupAttributes()
+void QTSServerPrefs::SetupAttributes()
 {
 	this->SetVal(qtssPrefsSessionTimeout, &fSessionTimeoutInSecs, sizeof(fSessionTimeoutInSecs));
 
@@ -191,17 +187,17 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 	{
 		//
 		// Look for a pref in the file that matches each pref in the dictionary
-		char* thePrefTypeStr = nullptr;
-		char* thePrefName = nullptr;
+		char* thePrefTypeStr = NULL;
+		char* thePrefName = NULL;
 
 		ContainerRef server = fPrefsSource->GetRefForServer();
 		ContainerRef pref = fPrefsSource->GetPrefRefByName(server, theMap->GetAttrName(x));
-		char* thePrefValue = nullptr;
-		if (pref != nullptr)
+		char* thePrefValue = NULL;
+		if (pref != NULL)
 			thePrefValue = fPrefsSource->GetPrefValueByRef(pref, 0, &thePrefName,
 			(char**)&thePrefTypeStr);
 
-		if ((thePrefValue == nullptr) && (x < qtssPrefsNumParams)) // Only generate errors for server prefs
+		if ((thePrefValue == NULL) && (x < qtssPrefsNumParams)) // Only generate errors for server prefs
 		{
 			//
 			// There is no pref, use the default and log an error
@@ -218,13 +214,13 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 					sPrefInfo[x].fDefaultValue);
 			}
 
-			this->setPrefValue(x, 0, sPrefInfo[x].fDefaultValue, sAttributes[x].fAttrDataType);
-			if (sPrefInfo[x].fAdditionalDefVals != nullptr)
+			this->SetPrefValue(x, 0, sPrefInfo[x].fDefaultValue, sAttributes[x].fAttrDataType);
+			if (sPrefInfo[x].fAdditionalDefVals != NULL)
 			{
 				//
 				// Add additional default values if they exist
-				for (UInt32 y = 0; sPrefInfo[x].fAdditionalDefVals[y] != nullptr; y++)
-					this->setPrefValue(x, y + 1, sPrefInfo[x].fAdditionalDefVals[y], sAttributes[x].fAttrDataType);
+				for (UInt32 y = 0; sPrefInfo[x].fAdditionalDefVals[y] != NULL; y++)
+					this->SetPrefValue(x, y + 1, sPrefInfo[x].fAdditionalDefVals[y], sAttributes[x].fAttrDataType);
 			}
 
 			if (inWriteMissingPrefs)
@@ -234,9 +230,9 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 				pref = fPrefsSource->AddPref(server, sAttributes[x].fAttrName, QTSSDataConverter::TypeToTypeString(sAttributes[x].fAttrDataType));
 				fPrefsSource->AddPrefValue(pref, sPrefInfo[x].fDefaultValue);
 
-				if (sPrefInfo[x].fAdditionalDefVals != nullptr)
+				if (sPrefInfo[x].fAdditionalDefVals != NULL)
 				{
-					for (UInt32 a = 0; sPrefInfo[x].fAdditionalDefVals[a] != nullptr; a++)
+					for (UInt32 a = 0; sPrefInfo[x].fAdditionalDefVals[a] != NULL; a++)
 						fPrefsSource->AddPrefValue(pref, sPrefInfo[x].fAdditionalDefVals[a]);
 				}
 			}
@@ -263,13 +259,13 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 					sPrefInfo[x].fDefaultValue);
 			}
 
-			this->setPrefValue(x, 0, sPrefInfo[x].fDefaultValue, sAttributes[x].fAttrDataType);
-			if (sPrefInfo[x].fAdditionalDefVals != nullptr)
+			this->SetPrefValue(x, 0, sPrefInfo[x].fDefaultValue, sAttributes[x].fAttrDataType);
+			if (sPrefInfo[x].fAdditionalDefVals != NULL)
 			{
 				//
 				// Add additional default values if they exist
-				for (UInt32 z = 0; sPrefInfo[x].fAdditionalDefVals[z] != nullptr; z++)
-					this->setPrefValue(x, z + 1, sPrefInfo[x].fAdditionalDefVals[z], sAttributes[x].fAttrDataType);
+				for (UInt32 z = 0; sPrefInfo[x].fAdditionalDefVals[z] != NULL; z++)
+					this->SetPrefValue(x, z + 1, sPrefInfo[x].fAdditionalDefVals[z], sAttributes[x].fAttrDataType);
 			}
 
 			if (inWriteMissingPrefs)
@@ -279,9 +275,9 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 				fPrefsSource->RemovePref(pref);
 				pref = fPrefsSource->AddPref(server, sAttributes[x].fAttrName, QTSSDataConverter::TypeToTypeString(sAttributes[x].fAttrDataType));
 				fPrefsSource->AddPrefValue(pref, sPrefInfo[x].fDefaultValue);
-				if (sPrefInfo[x].fAdditionalDefVals != nullptr)
+				if (sPrefInfo[x].fAdditionalDefVals != NULL)
 				{
-					for (UInt32 b = 0; sPrefInfo[x].fAdditionalDefVals[b] != nullptr; b++)
+					for (UInt32 b = 0; sPrefInfo[x].fAdditionalDefVals[b] != NULL; b++)
 						fPrefsSource->AddPrefValue(pref, sPrefInfo[x].fAdditionalDefVals[b]);
 				}
 			}
@@ -292,7 +288,7 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 		if ((x < qtssPrefsNumParams) && (!sPrefInfo[x].fAllowMultipleValues))
 			theNumValues = 1;
 
-		this->setPrefValuesFromFileWithRef(pref, x, theNumValues);
+		this->SetPrefValuesFromFileWithRef(pref, x, theNumValues);
 	}
 
 	QTSSRollingLog::SetCloseOnWrite(fCloseLogsOnWrite);
@@ -322,10 +318,10 @@ void QTSServerPrefs::RereadServerPreferences(bool inWriteMissingPrefs)
 //    return inBuffer;
 //}
 
-char* QTSServerPrefs::getStringPref(QTSS_AttributeID inAttrID)
+char* QTSServerPrefs::GetStringPref(QTSS_AttributeID inAttrID)
 {
 	StrPtrLen theBuffer;
-	(void)this->GetValue(inAttrID, 0, nullptr, &theBuffer.Len);
+	(void)this->GetValue(inAttrID, 0, NULL, &theBuffer.Len);
 	theBuffer.Ptr = new char[theBuffer.Len + 1];
 	theBuffer.Ptr[0] = '\0';
 

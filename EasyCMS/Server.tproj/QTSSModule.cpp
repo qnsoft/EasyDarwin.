@@ -48,12 +48,12 @@ bool  QTSSModule::sHasOpenFileModule = false;
 
 QTSSAttrInfoDict::AttrInfo  QTSSModule::sAttributes[] =
 {   /*fields:   fAttrName, fFuncPtr, fAttrDataType, fAttrPermission */
-    /* 0 */ { "qtssModName",            nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModePreempSafe },
-    /* 1 */ { "qtssModDesc",            nullptr,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
-    /* 2 */ { "qtssModVersion",         nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
-    /* 3 */ { "qtssModRoles",           nullptr,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModePreempSafe },
-    /* 4 */ { "qtssModPrefs",           nullptr,                   qtssAttrDataTypeQTSS_Object,qtssAttrModeRead | qtssAttrModePreempSafe  | qtssAttrModeInstanceAttrAllowed },
-    /* 5 */ { "qtssModAttributes",      nullptr,                   qtssAttrDataTypeQTSS_Object, qtssAttrModeRead | qtssAttrModePreempSafe | qtssAttrModeInstanceAttrAllowed }
+    /* 0 */ { "qtssModName",            NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModePreempSafe },
+    /* 1 */ { "qtssModDesc",            NULL,                   qtssAttrDataTypeCharArray,  qtssAttrModeRead | qtssAttrModeWrite },
+    /* 2 */ { "qtssModVersion",         NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModeWrite },
+    /* 3 */ { "qtssModRoles",           NULL,                   qtssAttrDataTypeUInt32,     qtssAttrModeRead | qtssAttrModePreempSafe },
+    /* 4 */ { "qtssModPrefs",           NULL,                   qtssAttrDataTypeQTSS_Object,qtssAttrModeRead | qtssAttrModePreempSafe  | qtssAttrModeInstanceAttrAllowed },
+    /* 5 */ { "qtssModAttributes",      NULL,                   qtssAttrDataTypeQTSS_Object, qtssAttrModeRead | qtssAttrModePreempSafe | qtssAttrModeInstanceAttrAllowed }
 };
 
 char*    QTSSModule::sRoleNames[] = 
@@ -86,17 +86,17 @@ void QTSSModule::Initialize()
 
 QTSSModule::QTSSModule(char* inName, char* inPath)
 :   QTSSDictionary(QTSSDictionaryMap::GetMap(QTSSDictionaryMap::kModuleDictIndex)),
-    fQueueElem(nullptr),
-    fPath(nullptr),
-    fFragment(nullptr),
-    fDispatchFunc(nullptr),
-    fPrefs(nullptr),
-    fAttributes(nullptr)
+    fQueueElem(NULL),
+    fPath(NULL),
+    fFragment(NULL),
+    fDispatchFunc(NULL),
+    fPrefs(NULL),
+    fAttributes(NULL)
 {
 
     fQueueElem.SetEnclosingObject(this);
     this->SetTaskName("QTSSModule");
-    if ((inPath != nullptr) && (inPath[0] != '\0'))
+    if ((inPath != NULL) && (inPath[0] != '\0'))
     {
         // Create a code fragment if this module is being loaded from disk
         
@@ -105,13 +105,13 @@ QTSSModule::QTSSModule(char* inName, char* inPath)
         ::strcpy(fPath, inPath);
     }
     
-    fAttributes = new QTSSDictionary( nullptr, &fAttributesMutex );
+    fAttributes = new QTSSDictionary( NULL, &fAttributesMutex );
     
     this->SetVal(qtssModPrefs,      &fPrefs,            sizeof(fPrefs));
     this->SetVal(qtssModAttributes, &fAttributes,       sizeof(fAttributes));
     
     // If there is a name, copy it into the module object's internal buffer
-    if (inName != nullptr)
+    if (inName != NULL)
         this->SetValue(qtssModName, 0, inName, ::strlen(inName), QTSSDictionary::kDontObeyReadOnly);
                 
     ::memset(fRoleArray, 0, sizeof(fRoleArray));
@@ -125,13 +125,13 @@ QTSS_Error  QTSSModule::SetupModule(QTSS_CallbacksPtr inCallbacks, QTSS_MainEntr
     
     // Load fragment from disk if necessary
     
-    if ((fFragment != nullptr) && (inEntrypoint == nullptr))
+    if ((fFragment != NULL) && (inEntrypoint == NULL))
         theErr = this->loadFromDisk(&inEntrypoint);
     if (theErr != QTSS_NoErr)
         return theErr;
         
     // At this point, we must have an entrypoint
-    if (inEntrypoint == nullptr)
+    if (inEntrypoint == NULL)
         return QTSS_NotAModule;
         
     // Invoke the private initialization routine
@@ -139,7 +139,7 @@ QTSS_Error  QTSSModule::SetupModule(QTSS_CallbacksPtr inCallbacks, QTSS_MainEntr
     thePrivateArgs.inServerAPIVersion = QTSS_API_VERSION;
     thePrivateArgs.inCallbacks = inCallbacks;
     thePrivateArgs.outStubLibraryVersion = 0;
-    thePrivateArgs.outDispatchFunction = nullptr;
+    thePrivateArgs.outDispatchFunction = NULL;
     
     theErr = (inEntrypoint)(&thePrivateArgs);
     if (theErr != QTSS_NoErr)
@@ -154,9 +154,9 @@ QTSS_Error  QTSSModule::SetupModule(QTSS_CallbacksPtr inCallbacks, QTSS_MainEntr
     	
     //Log 
     char msgStr[2048];
-    char* moduleName = nullptr;
+    char* moduleName = NULL;
     (void)this->GetValueAsString (qtssModName, 0, &moduleName);
-    qtss_snprintf(msgStr, sizeof(msgStr), "Module Loaded...%s [%s]", moduleName, (fFragment==nullptr)?"static":"dynamic");
+    qtss_snprintf(msgStr, sizeof(msgStr), "Module Loaded...%s [%s]", moduleName, (fFragment==NULL)?"static":"dynamic");
     delete moduleName;
     QTSServerInterface::LogError(qtssMessageVerbosity, msgStr);
 	
@@ -167,10 +167,10 @@ QTSS_Error QTSSModule::loadFromDisk(QTSS_MainEntryPointPtr* outEntrypoint)
 {
     static StrPtrLen sMainEntrypointName("_Main");
     
-    Assert(outEntrypoint != nullptr);
+    Assert(outEntrypoint != NULL);
     
     // Modules only need to be initialized if they reside on disk. 
-    if (fFragment == nullptr)
+    if (fFragment == NULL)
         return QTSS_NoErr;
     
     if (!fFragment->IsValid())
@@ -184,7 +184,7 @@ QTSS_Error QTSSModule::loadFromDisk(QTSS_MainEntryPointPtr* outEntrypoint)
     while (thePathParser.GetThru(&theFileName, kPathDelimiterChar))
         ;
     Assert(theFileName.Len > 0);
-    Assert(theFileName.Ptr != nullptr);
+    Assert(theFileName.Ptr != NULL);
 
 #ifdef __Win32__
     StringParser theDLLTruncator(&theFileName);
@@ -237,7 +237,8 @@ SInt32 QTSSModule::GetPrivateRoleIndex(QTSS_Role apiRole)
 		case Easy_RedisTTL_Role:			return kRedisTTLRole			;
 		case Easy_RedisSetDevice_Role:		return kRedisSetDeviceRole		;
 		case Easy_RedisDelDevice_Role:		return kRedisDelDeviceRole		;
-		case Easy_RedisGetEasyDarwin_Role: return kRedisGetEasyDarwinRole	;
+		case Easy_RedisGetEasyDarwin_Role:	return kRedisGetEasyDarwinRole	;
+		case Easy_RedisLog_Role:			return kRedisLogRole			;
         default:
             return -1;
     }
@@ -274,7 +275,7 @@ SInt64 QTSSModule::Run()
 {
     EventFlags events = this->GetEvents();
 
- 	OSThreadDataSetter theSetter(&fModuleState, nullptr);
+ 	OSThreadDataSetter theSetter(&fModuleState, NULL);
     if (events & Task::kUpdateEvent)
     {   // force us to update to a new idle time
         return fModuleState.idleTime;// If the module has requested idle time...
@@ -293,7 +294,7 @@ SInt64 QTSSModule::Run()
                 fModuleState.isGlobalLocked = true;
             } 
             
-            (void)this->CallDispatch(QTSS_Interval_Role, nullptr);
+            (void)this->CallDispatch(QTSS_Interval_Role, NULL);
             fModuleState.isGlobalLocked = false;
     
             if (fModuleState.globalLockRequested) // call this request back locked
