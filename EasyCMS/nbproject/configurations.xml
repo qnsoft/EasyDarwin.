@@ -381,7 +381,7 @@
             <pElem>../Lib/i386</pElem>
             <pElem>../EasyRedisClient/${CND_CONF}</pElem>
           </linkerAddLib>
-          <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lboost_system -lboost_thread -lrt -leasyredisclient</commandLine>
+          <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lrt -leasyredisclient</commandLine>
         </linkerTool>
       </compileType>
       <item path="../HTTPUtilitiesLib/HTTPProtocol.cpp"
@@ -598,7 +598,7 @@
             <pElem>../Lib/x64</pElem>
             <pElem>../EasyRedisClient/${CND_CONF}</pElem>
           </linkerAddLib>
-          <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lboost_system -lboost_thread -lrt -leasyredisclient</commandLine>
+          <commandLine>-lCommonUtilitiesLib -ldl -lpthread -lEasyProtocol -ljsoncpp -lrt -leasyredisclient</commandLine>
         </linkerTool>
       </compileType>
       <item path="../HTTPUtilitiesLib/HTTPProtocol.cpp"
