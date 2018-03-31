@@ -115,9 +115,9 @@ class RTSPSession extends event.EventEmitter {
                     if (yield) return;
                 }
                 var rtpBody = this.bp.read(rtpLen);
-                if(channel == this.aRTPChannel) {
+                if (channel == this.aRTPChannel) {
                     this.broadcastAudio(rtpBody);
-                } else if(channel == this.vRTPChannel) {
+                } else if (channel == this.vRTPChannel) {
                     this.broadcastVideo(rtpBody);
                     if (this.vCodec.toUpperCase() == 'H264') {
                         var rtp = rtpParser.parseRtpPacket(rtpBody);
@@ -127,9 +127,9 @@ class RTSPSession extends event.EventEmitter {
                         }
                         this.gopCache.push(rtpBody);
                     }
-                } else if(channel == this.aRTPControlChannel) {
+                } else if (channel == this.aRTPControlChannel) {
                     this.broadcastAudioControl(rtpBody);
-                } else if(channel == this.vRTPControlChannel) {
+                } else if (channel == this.vRTPControlChannel) {
                     this.broadcastVideoControl(rtpBody);
                 }
                 this.inBytes += (rtpLen + 4);
@@ -263,84 +263,86 @@ class RTSPSession extends event.EventEmitter {
             case 'SETUP':
                 var ts = req['Transport'] || "";
                 var control = req.url.substring(req.url.lastIndexOf('/') + 1);
-                var matches = ts.match(/interleaved=(\d+)(-(\d+))?/);
-                if (matches) {
+                var mtcp = ts.match(/interleaved=(\d+)(-(\d+))?/);
+                var mudp = ts.match(/client_port=(\d+)(-(\d+))?/);
+                if (mtcp) {
                     this.transType = 'tcp';
                     if (control == this.vControl) {
-                        this.vRTPChannel = parseInt(matches[1]) || 0;
-                        this.vRTPControlChannel = parseInt(matches[3]) || 0;
+                        this.vRTPChannel = parseInt(mtcp[1]) || 0;
+                        this.vRTPControlChannel = parseInt(mtcp[3]) || 0;
                     }
                     if (control == this.aControl) {
-                        this.aRTPChannel = parseInt(matches[1]) || 0;
-                        this.aRTPControlChannel = parseInt(matches[3]) || 0;
+                        this.aRTPChannel = parseInt(mtcp[1]) || 0;
+                        this.aRTPControlChannel = parseInt(mtcp[3]) || 0;
                     }
-                } else {
+                } else if (mudp) {
                     this.transType = 'udp';
-                    matches = ts.match(/client_port=(\d+)(-(\d+))?/);
-                    if(matches) {
-                        if(control == this.aControl) {
-                            this.aRTPClientPort = parseInt(matches[1]) || 0;
-                            this.aRTPClientSocket = dgram.createSocket(this.getUDPType());
-                            this.aRTPControlClientPort = parseInt(matches[3]) || 0;
+                    if (control == this.aControl) {
+                        this.aRTPClientPort = parseInt(mudp[1]) || 0;
+                        this.aRTPClientSocket = dgram.createSocket(this.getUDPType());
+                        this.aRTPControlClientPort = parseInt(mudp[3]) || 0;
+                        if(this.aRTPControlClientPort) {
                             this.aRTPControlClientSocket = dgram.createSocket(this.getUDPType());
-                            if(this.type == 'pusher') {
-                                this.aRTPServerPort = await getPort();
-                                this.aRTPServerSocket = dgram.createSocket(this.getUDPType());
-                                this.aRTPServerSocket.on('message', buf => {
-                                    this.inBytes += buf.length;
-                                    this.broadcastAudio(buf);
-                                }).on('error', err => {
-                                    console.log(err);
-                                })
-                                await this.bindUDPPort(this.aRTPServerSocket, this.aRTPServerPort);
-                                this.aRTPControlServerPort = await getPort();
-                                this.aRTPControlServerSocket = dgram.createSocket(this.getUDPType());
-                                this.aRTPControlServerSocket.on('message', buf => {
-                                    this.inBytes += buf.length;
-                                    this.broadcastAudioControl(buf);                                   
-                                }).on('error', err => {
-                                    console.log(err);
-                                })
-                                await this.bindUDPPort(this.aRTPControlServerSocket, this.aRTPControlServerPort);
-                                ts = ts.split(';');
-                                ts.splice(ts.indexOf(matches[0]) + 1, 0, `server_port=${this.aRTPServerPort}-${this.aRTPControlServerPort}`);
-                                ts = ts.join(';');
-                            }
                         }
-                        if (control == this.vControl) {
-                            this.vRTPClientPort = parseInt(matches[1]) || 0;
-                            this.vRTPClientSocket = dgram.createSocket(this.getUDPType());
-                            this.vRTPControlClientPort = parseInt(matches[3]) || 0;
+                        if (this.type == 'pusher') {
+                            this.aRTPServerPort = await getPort();
+                            this.aRTPServerSocket = dgram.createSocket(this.getUDPType());
+                            this.aRTPServerSocket.on('message', buf => {
+                                this.inBytes += buf.length;
+                                this.broadcastAudio(buf);
+                            }).on('error', err => {
+                                console.log(err);
+                            })
+                            await this.bindUDPPort(this.aRTPServerSocket, this.aRTPServerPort);
+                            this.aRTPControlServerPort = await getPort();
+                            this.aRTPControlServerSocket = dgram.createSocket(this.getUDPType());
+                            this.aRTPControlServerSocket.on('message', buf => {
+                                this.inBytes += buf.length;
+                                this.broadcastAudioControl(buf);
+                            }).on('error', err => {
+                                console.log(err);
+                            })
+                            await this.bindUDPPort(this.aRTPControlServerSocket, this.aRTPControlServerPort);
+                            ts = ts.split(';');
+                            ts.splice(ts.indexOf(mudp[0]) + 1, 0, `server_port=${this.aRTPServerPort}-${this.aRTPControlServerPort}`);
+                            ts = ts.join(';');
+                        }
+                    }
+                    if (control == this.vControl) {
+                        this.vRTPClientPort = parseInt(mudp[1]) || 0;
+                        this.vRTPClientSocket = dgram.createSocket(this.getUDPType());
+                        this.vRTPControlClientPort = parseInt(mudp[3]) || 0;
+                        if(this.vRTPControlClientPort) {
                             this.vRTPControlClientSocket = dgram.createSocket(this.getUDPType());
-                            if(this.type == 'pusher') {
-                                this.vRTPServerPort = await getPort();
-                                this.vRTPServerSocket = dgram.createSocket(this.getUDPType());
-                                this.vRTPServerSocket.on('message', buf => {
-                                    this.inBytes += buf.length;
-                                    this.broadcastVideo(buf);
-                                    if (this.vCodec.toUpperCase() == 'H264') {
-                                        var rtp = rtpParser.parseRtpPacket(buf);
-                                        if (rtpParser.isKeyframeStart(rtp.payload)) {
-                                            // console.log(`find key frame, current gop cache size[${this.gopCache.length}]`);
-                                            this.gopCache = [];
-                                        }
-                                        this.gopCache.push(buf);
-                                    } 
-                                }).on('error', err => {
-                                    console.log(err);
-                                })
-                                await this.bindUDPPort(this.vRTPServerSocket, this.vRTPServerPort);
-                                this.vRTPControlServerPort = await getPort();
-                                this.vRTPControlserverSokcet = dgram.createSocket(this.getUDPType());
-                                this.vRTPControlserverSokcet.on('message', buf => {
-                                    this.inBytes += buf.length;
-                                    this.broadcastVideoControl(buf);                                  
-                                })
-                                await this.bindUDPPort(this.vRTPControlserverSokcet, this.vRTPControlServerPort);
-                                ts = ts.split(';');
-                                ts.splice(ts.indexOf(matches[0]) + 1, 0, `server_port=${this.vRTPServerPort}-${this.vRTPControlServerPort}`);
-                                ts = ts.join(';');
-                            }
+                        }
+                        if (this.type == 'pusher') {
+                            this.vRTPServerPort = await getPort();
+                            this.vRTPServerSocket = dgram.createSocket(this.getUDPType());
+                            this.vRTPServerSocket.on('message', buf => {
+                                this.inBytes += buf.length;
+                                this.broadcastVideo(buf);
+                                if (this.vCodec.toUpperCase() == 'H264') {
+                                    var rtp = rtpParser.parseRtpPacket(buf);
+                                    if (rtpParser.isKeyframeStart(rtp.payload)) {
+                                        // console.log(`find key frame, current gop cache size[${this.gopCache.length}]`);
+                                        this.gopCache = [];
+                                    }
+                                    this.gopCache.push(buf);
+                                }
+                            }).on('error', err => {
+                                console.log(err);
+                            })
+                            await this.bindUDPPort(this.vRTPServerSocket, this.vRTPServerPort);
+                            this.vRTPControlServerPort = await getPort();
+                            this.vRTPControlserverSokcet = dgram.createSocket(this.getUDPType());
+                            this.vRTPControlserverSokcet.on('message', buf => {
+                                this.inBytes += buf.length;
+                                this.broadcastVideoControl(buf);
+                            })
+                            await this.bindUDPPort(this.vRTPControlserverSokcet, this.vRTPControlServerPort);
+                            ts = ts.split(';');
+                            ts.splice(ts.indexOf(mudp[0]) + 1, 0, `server_port=${this.vRTPServerPort}-${this.vRTPControlServerPort}`);
+                            ts = ts.join(';');
                         }
                     }
                 }
@@ -417,12 +419,12 @@ class RTSPSession extends event.EventEmitter {
 
     sendGOPCache() {
         return new Promise(async (resolve, reject) => {
-            if(!this.pushSession) {
+            if (!this.pushSession) {
                 resolve();
                 return;
             }
-            for(var rtpBuf of this.pushSession.gopCache) {
-                if(this.transType == 'tcp') {
+            for (var rtpBuf of this.pushSession.gopCache) {
+                if (this.transType == 'tcp') {
                     var len = rtpBuf.length + 4;
                     var headerBuf = Buffer.allocUnsafe(4);
                     headerBuf.writeUInt8(0x24, 0);
@@ -431,7 +433,7 @@ class RTSPSession extends event.EventEmitter {
                     this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
                     this.outBytes += len;
                     this.pushSession.outBytes += len;
-                } else if(this.transType == 'udp') {
+                } else if (this.transType == 'udp' && this.vRTPClientSocket) {
                     await this.sendUDPPack(rtpBuf, this.vRTPClientSocket, this.vRTPClientPort, this.host);
                     // this.vRTPClientSocket.send(rtpBuf, this.vRTPClientPort, this.host);
                     await this.sleep(1);
@@ -444,7 +446,7 @@ class RTSPSession extends event.EventEmitter {
     }
 
     async sendVideo(rtpBuf) {
-        if(this.transType == 'tcp') {
+        if (this.transType == 'tcp') {
             var len = rtpBuf.length + 4;
             var headerBuf = Buffer.allocUnsafe(4);
             headerBuf.writeUInt8(0x24, 0);
@@ -453,7 +455,7 @@ class RTSPSession extends event.EventEmitter {
             this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
             this.outBytes += len;
             this.pushSession.outBytes += len;
-        } else if(this.transType == 'udp') {
+        } else if (this.transType == 'udp' && this.vRTPClientSocket) {
             this.vRTPClientSocket.send(rtpBuf, this.vRTPClientPort, this.host);
             this.outBytes += rtpBuf.length;
             this.pushSession.outBytes += rtpBuf.length;
@@ -461,7 +463,7 @@ class RTSPSession extends event.EventEmitter {
     }
 
     sendVideoControl(rtpBuf) {
-        if(this.transType == 'tcp') {
+        if (this.transType == 'tcp') {
             var len = rtpBuf.length + 4;
             var headerBuf = Buffer.allocUnsafe(4);
             headerBuf.writeUInt8(0x24, 0);
@@ -470,7 +472,7 @@ class RTSPSession extends event.EventEmitter {
             this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
             this.outBytes += len;
             this.pushSession.outBytes += len;
-        } else if(this.transType == 'udp') {
+        } else if (this.transType == 'udp' && this.vRTPControlClientSocket) {
             this.vRTPControlClientSocket.send(rtpBuf, this.vRTPControlClientPort, this.host);
             this.outBytes += rtpBuf.length;
             this.pushSession.outBytes += rtpBuf.length;
@@ -478,7 +480,7 @@ class RTSPSession extends event.EventEmitter {
     }
 
     sendAudio(rtpBuf) {
-        if(this.transType == 'tcp') {
+        if (this.transType == 'tcp') {
             var len = rtpBuf.length + 4;
             var headerBuf = Buffer.allocUnsafe(4);
             headerBuf.writeUInt8(0x24, 0);
@@ -487,7 +489,7 @@ class RTSPSession extends event.EventEmitter {
             this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
             this.outBytes += len;
             this.pushSession.outBytes += len;
-        } else if(this.transType == 'udp') {
+        } else if (this.transType == 'udp' && this.aRTPClientSocket) {
             this.aRTPClientSocket.send(rtpBuf, this.aRTPClientPort, this.host);
             this.outBytes += rtpBuf.length;
             this.pushSession.outBytes += rtpBuf.length;
@@ -495,7 +497,7 @@ class RTSPSession extends event.EventEmitter {
     }
 
     sendAudioControl(rtpBuf) {
-        if(this.transType == 'tcp') {
+        if (this.transType == 'tcp') {
             var len = rtpBuf.length + 4;
             var headerBuf = Buffer.allocUnsafe(4);
             headerBuf.writeUInt8(0x24, 0);
@@ -504,7 +506,7 @@ class RTSPSession extends event.EventEmitter {
             this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
             this.outBytes += len;
             this.pushSession.outBytes += len;
-        } else if(this.transType == 'udp') {
+        } else if (this.transType == 'udp' && this.aRTPControlClientSocket) {
             this.aRTPControlClientSocket.send(rtpBuf, this.aRTPControlClientPort, this.host);
             this.outBytes += rtpBuf.length;
             this.pushSession.outBytes += rtpBuf.length;
@@ -513,28 +515,28 @@ class RTSPSession extends event.EventEmitter {
 
     broadcastVideo(rtpBuf) {
         var playSessions = this.server.playSessions[this.path] || [];
-        for(var playSession of playSessions) {
+        for (var playSession of playSessions) {
             playSession.sendVideo(rtpBuf);
         }
     }
 
     broadcastVideoControl(rtpBuf) {
         var playSessions = this.server.playSessions[this.path] || [];
-        for(var playSession of playSessions) {
+        for (var playSession of playSessions) {
             playSession.sendVideoControl(rtpBuf);
         }
     }
 
     broadcastAudio(rtpBuf) {
         var playSessions = this.server.playSessions[this.path] || [];
-        for(var playSession of playSessions) {
+        for (var playSession of playSessions) {
             playSession.sendAudio(rtpBuf);
         }
     }
 
     broadcastAudioControl(rtpBuf) {
         var playSessions = this.server.playSessions[this.path] || [];
-        for(var playSession of playSessions) {
+        for (var playSession of playSessions) {
             playSession.sendAudioControl(rtpBuf);
         }
     }

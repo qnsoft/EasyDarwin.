@@ -10,7 +10,8 @@ EasyDarwin Node.js 版本 [Demo](http://www.easydarwin.org:10008)
 
 2. 安装依赖库
 
-        cd EasyDarwin && npm i
+        git clone --depth=1 https://github.com/EasyDarwin/EasyDarwin.git
+        cd EasyDarwin && npm i --no-save
 
 ## 运行测试
 
