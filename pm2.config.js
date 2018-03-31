@@ -12,7 +12,8 @@ module.exports = {
         NODE_ENV: 'production'
       },
       watch: false,
-      autorestart: false,
+      max_restarts: 5,
+      // autorestart: false,
       error_file: path.resolve(cfg.dataDir, "logs/easydarwin.log"),
       out_file: path.resolve(cfg.dataDir, "logs/easydarwin.log")
     }
