@@ -42,7 +42,7 @@
             <el-pagination layout="prev,pager,next" class="pull-right" :total="total" :page-size.sync="pageSize" :current-page="page"></el-pagination>
         </div>
 
-        <UserFormDlg ref="userDlg" @submit="load"></UserFormDlg>
+        <UserFormDlg ref="userDlg" @submit="load" :defaultPwd="defaultPwd"></UserFormDlg>
     </div>
 </template>
 

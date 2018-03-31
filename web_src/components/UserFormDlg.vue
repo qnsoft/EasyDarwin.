@@ -21,20 +21,20 @@ import FormDlg from 'components/FormDlg.vue'
 import $ from 'jquery'
 
 export default {
+    props: {
+        defaultPwd: {
+            type: String,
+            default: ''
+        }
+    },
     data() {
         return {
             roles: [],
-            defaultPwd: '',
             form: this.defForm()
         }
     },
     components: {
         FormDlg
-    },
-    mounted() {
-        $.get('/user/defaultPwd').then(data => {
-            this.defaultPwd = data;
-        })
     },
     methods: {
         defForm() {

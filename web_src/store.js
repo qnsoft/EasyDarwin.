@@ -15,11 +15,11 @@ const store = new Vuex.Store({
                 title: "首页",
                 icon: 'dashboard'
             }, {
-                path: '/pushers',
+                path: '/pushers/1',
                 title: "推流列表",
                 icon: "video-camera"
             }, {
-                path: '/players',
+                path: '/players/1',
                 title: "拉流列表",
                 icon: "play"
             }, {
