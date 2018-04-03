@@ -1,6 +1,6 @@
 {
-  "name": "node-easydarwin",
-  "version": "1.0.0",
+  "name": "easydarwin",
+  "version": "8.0.0",
   "description": "EasyDarwin NodeJS Server",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -29,6 +29,7 @@
     "get-port": "3.2.0",
     "lowdb": "1.0.0",
     "moment": "2.21.0",
+    "pm2": "2.10.2",
     "sdp-transform": "2.4.0",
     "shortid": "2.2.8",
     "urlsafe-base64": "1.0.0",
@@ -39,5 +40,18 @@
       "www",
       "web_src"
     ]
+  },
+  "pack": {
+    "pattern": "{routes/**,utils/**,www/**,*.js,*.bat,*.sh,*.md,node_modules/**}",
+    "options": {
+      "dot": true,
+      "ignore": [
+        "node_modules/@types{,/**}",
+        "node_modules/babel*{,/**}",
+        "node_modules/webpack*{,/**}",
+        "node_modules/**/{*.md,license,LICENSE}",
+        "*.log"
+      ]
+    }
   }
 }

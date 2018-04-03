@@ -1,28 +1,38 @@
-# EasyDarwin
+# NodeEasyDarwin
 
-EasyDarwin Node.js 版本 [Demo](http://www.easydarwin.org:10008)
+EasyDarwin Node.js 版本
+
+![snapshot](snapshot.png)
 
 ## 安装部署
 
-1. 准备 Node.js 运行环境
+- [下载解压 release 包](https://github.com/EasyDarwin/EasyDarwin/releases)
 
-    Node.js version >= v8
+- 运行服务
 
-2. 安装依赖库
+	Windows 平台执行 `start.bat` 运行 EasyDarwin
+	
+	Linux 平台, 执行 `start.sh` 运行
 
-        git clone --depth=1 https://github.com/EasyDarwin/EasyDarwin.git
-        cd EasyDarwin && npm i --no-save
+- 停止服务
 
-## 运行测试
+	Windows 平台执行 `stop.bat` 停止 EasyDarwin
+	
+	Linux 平台执行 `stop.sh` 停止
 
-1. 启动流媒体服务
+- 测试推流
 
-        cd EasyDarwin && npm run start
+        ffmpeg -i rtmp://live.hkstv.hk.lxdns.com/live/hks \
+        -rtsp_transport tcp -vcodec h264 -f rtsp \
+        rtsp://localhost/test
 
-2. 测试推流
+- 测试播放
 
-        ffmpeg -i rtmp://live.hkstv.hk.lxdns.com/live/hks -rtsp_transport tcp -vcodec h264 -f rtsp rtsp://www.easydarwin.org/test
+        ffplay -rtsp_transport tcp \
+        rtsp://localhost/test  
 
-3. 测试播放
+## 开发模式运行
 
-        ffplay -rtsp_transport tcp rtsp://www.easydarwin.org/test        
+		cd EasyDarwin && npm i
+		npm i -g nodemon
+		npm run dev		      

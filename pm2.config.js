@@ -4,7 +4,7 @@ const path = require('path');
 module.exports = {
   apps: [
     {
-      name: "easydarwin",
+      name: "EasyDarwin",
       script: 'app.js',
       cwd: __dirname,
       env: {
@@ -14,8 +14,8 @@ module.exports = {
       watch: false,
       max_restarts: 5,
       // autorestart: false,
-      error_file: path.resolve(cfg.dataDir, "logs/easydarwin.log"),
-      out_file: path.resolve(cfg.dataDir, "logs/easydarwin.log")
+      error_file: path.resolve(cfg.dataDir, "logs/EasyDarwin.log"),
+      out_file: path.resolve(cfg.dataDir, "logs/EasyDarwin.log")
     }
   ]
 };
