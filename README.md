@@ -1,4 +1,4 @@
-# NodeEasyDarwin
+# EasyDarwin
 
 EasyDarwin Node.js 版本
 
