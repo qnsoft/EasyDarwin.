@@ -28,6 +28,7 @@ class RTSPSession extends event.EventEmitter {
         this.aControl = '';
         this.vControl = '';
         this.pushSession = null;
+        this.playSessions = {};
         this.transType = 'tcp';
 
         //-- tcp trans params
@@ -94,8 +95,6 @@ class RTSPSession extends event.EventEmitter {
         }).on("timeout", () => {
             this.socket.end();
         })
-
-        this.on("request", this.handleRequest);
     }
 
     * genHandleData() {
@@ -118,8 +117,7 @@ class RTSPSession extends event.EventEmitter {
                 if (channel == this.aRTPChannel) {
                     this.broadcastAudio(rtpBody);
                 } else if (channel == this.vRTPChannel) {
-                    this.broadcastVideo(rtpBody);
-                    if (this.vCodec.toUpperCase() == 'H264') {
+                    if (this.vCodec == 'H264') {
                         var rtp = rtpParser.parseRtpPacket(rtpBody);
                         if (rtpParser.isKeyframeStart(rtp.payload)) {
                             // console.log(`find key frame, current gop cache size[${this.gopCache.length}]`);
@@ -127,6 +125,7 @@ class RTSPSession extends event.EventEmitter {
                         }
                         this.gopCache.push(rtpBody);
                     }
+                    this.broadcastVideo(rtpBody);
                 } else if (channel == this.aRTPControlChannel) {
                     this.broadcastAudioControl(rtpBody);
                 } else if (channel == this.vRTPControlChannel) {
@@ -135,12 +134,15 @@ class RTSPSession extends event.EventEmitter {
                 this.inBytes += (rtpLen + 4);
             } else { // rtsp method
                 var reqBuf = Buffer.concat([buf], 1);
-                while (reqBuf.toString().indexOf("\r\n\r\n") < 0) {
+                while (true) {
                     if (this.bp.need(1)) {
                         if (yield) return;
                     }
                     buf = this.bp.read(1);
                     reqBuf = Buffer.concat([reqBuf, buf], reqBuf.length + 1);
+                    if (buf.toString() == '\n' && reqBuf.toString().endsWith("\r\n\r\n")) {
+                        break;
+                    }
                 }
                 var req = this.parseRequestHeader(reqBuf.toString());
                 this.inBytes += reqBuf.length;
@@ -152,7 +154,7 @@ class RTSPSession extends event.EventEmitter {
                     this.inBytes += bodyLen;
                     buf = this.bp.read(bodyLen);
                     var bodyRaw = buf.toString();
-                    if (req.method.toUpperCase() == 'ANNOUNCE') {
+                    if (req.method == 'ANNOUNCE') {
                         this.sdp = sdpParser.parse(bodyRaw);
                         // console.log(JSON.stringify(this.sdp, null, 1));
                         this.sdpRaw = bodyRaw;
@@ -178,7 +180,7 @@ class RTSPSession extends event.EventEmitter {
                     }
                     req.raw += bodyRaw;
                 }
-                this.emit('request', req);
+                this.handleRequest(req);
             }
         }
 
@@ -252,12 +254,10 @@ class RTSPSession extends event.EventEmitter {
                 this.type = 'pusher';
                 this.url = req.url;
                 this.path = url.parse(this.url).path;
-                var pushSession = this.server.pushSessions[this.path];
+                var pushSession = this.server.sessions[this.path];
                 if (pushSession) {
                     res.code = 406;
                     res.msg = 'Not Acceptable';
-                } else {
-                    this.server.addSession(this);
                 }
                 break;
             case 'SETUP':
@@ -281,7 +281,7 @@ class RTSPSession extends event.EventEmitter {
                         this.aRTPClientPort = parseInt(mudp[1]) || 0;
                         this.aRTPClientSocket = dgram.createSocket(this.getUDPType());
                         this.aRTPControlClientPort = parseInt(mudp[3]) || 0;
-                        if(this.aRTPControlClientPort) {
+                        if (this.aRTPControlClientPort) {
                             this.aRTPControlClientSocket = dgram.createSocket(this.getUDPType());
                         }
                         if (this.type == 'pusher') {
@@ -312,15 +312,13 @@ class RTSPSession extends event.EventEmitter {
                         this.vRTPClientPort = parseInt(mudp[1]) || 0;
                         this.vRTPClientSocket = dgram.createSocket(this.getUDPType());
                         this.vRTPControlClientPort = parseInt(mudp[3]) || 0;
-                        if(this.vRTPControlClientPort) {
+                        if (this.vRTPControlClientPort) {
                             this.vRTPControlClientSocket = dgram.createSocket(this.getUDPType());
                         }
                         if (this.type == 'pusher') {
                             this.vRTPServerPort = await getPort();
                             this.vRTPServerSocket = dgram.createSocket(this.getUDPType());
                             this.vRTPServerSocket.on('message', buf => {
-                                this.inBytes += buf.length;
-                                this.broadcastVideo(buf);
                                 if (this.vCodec.toUpperCase() == 'H264') {
                                     var rtp = rtpParser.parseRtpPacket(buf);
                                     if (rtpParser.isKeyframeStart(rtp.payload)) {
@@ -329,6 +327,8 @@ class RTSPSession extends event.EventEmitter {
                                     }
                                     this.gopCache.push(buf);
                                 }
+                                this.inBytes += buf.length;
+                                this.broadcastVideo(buf);
                             }).on('error', err => {
                                 console.log(err);
                             })
@@ -352,45 +352,42 @@ class RTSPSession extends event.EventEmitter {
                 this.type = 'player';
                 this.url = req.url;
                 this.path = url.parse(this.url).path;
-                var pushSession = this.server.pushSessions[this.path];
+                var pushSession = this.server.sessions[this.path];
                 if (pushSession && pushSession.sdpRaw) {
                     res.headers['Content-Length'] = pushSession.sdpRaw.length;
                     res.body = pushSession.sdpRaw;
                     this.sdp = pushSession.sdp;
                     this.sdpRaw = pushSession.sdpRaw;
+
+                    this.aControl = pushSession.aControl;
+                    this.aCodec = pushSession.aCodec;
+                    this.aRate = pushSession.aRate;
+                    this.aPayload = pushSession.aPlayload;
+
+                    this.vControl = pushSession.vControl;
+                    this.vCodec= pushSession.vCodec;
+                    this.vRate = pushSession.vRate;
+                    this.vPayload = pushSession.vPayload;
+
                     this.pushSession = pushSession;
-                    if (this.sdp && this.sdp.media && this.sdp.media.length > 0) {
-                        for (var media of this.sdp.media) {
-                            if (media.type == 'video') {
-                                this.vControl = media.control;
-                                if (media.rtp && media.rtp.length > 0) {
-                                    this.vCodec = media.rtp[0].codec;
-                                    this.vRate = media.rtp[0].rate;
-                                    this.vPayload = media.rtp[0].payload;
-                                }
-                            } else if (media.type == 'audio') {
-                                this.aControl = media.control;
-                                if (media.rtp && media.rtp.length > 0) {
-                                    this.aCodec = media.rtp[0].codec;
-                                    this.aRate = media.rtp[0].rate;
-                                    this.aPayload = media.rtp[0].payload;
-                                }
-                            }
-                        }
-                    }
                 } else {
                     res.code = 404;
                     res.msg = 'NOT FOUND';
                 }
                 break;
             case 'PLAY':
-                process.nextTick(async () => {
-                    await this.sendGOPCache();
-                    this.server.addSession(this);
+                process.nextTick(() => {
+                    if(this.pushSession) {
+                        this.sendGOPCache();
+                        this.pushSession.playSessions[this.sid] = this;
+                    }
                 })
                 res.headers['Range'] = req['Range'];
                 break;
             case 'RECORD':
+                process.nextTick(() => {
+                    this.server.sessions[this.path] = this;
+                })
                 break;
             case 'TEARDOWN':
                 this.makeResponseAndSend(res);
@@ -402,7 +399,12 @@ class RTSPSession extends event.EventEmitter {
 
     stop() {
         this.bp.stop();
-        this.server.removeSession(this);
+
+        if(this.type == 'pusher') {
+            delete this.server.sessions[this.path];
+        } else if(this.type == 'player' && this.pushSession) {
+            delete this.pushSession.playSessions[this.sid];
+        }
 
         this.aRTPClientSocket && this.aRTPClientSocket.close();
         this.aRTPControlClientSocket && this.aRTPControlClientSocket.close();
@@ -418,34 +420,21 @@ class RTSPSession extends event.EventEmitter {
     }
 
     sendGOPCache() {
-        return new Promise(async (resolve, reject) => {
-            if (!this.pushSession) {
-                resolve();
-                return;
-            }
+        if (this.transType == 'tcp') {
             for (var rtpBuf of this.pushSession.gopCache) {
-                if (this.transType == 'tcp') {
-                    var len = rtpBuf.length + 4;
-                    var headerBuf = Buffer.allocUnsafe(4);
-                    headerBuf.writeUInt8(0x24, 0);
-                    headerBuf.writeUInt8(this.vRTPChannel, 1);
-                    headerBuf.writeUInt16BE(rtpBuf.length, 2);
-                    this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
-                    this.outBytes += len;
-                    this.pushSession.outBytes += len;
-                } else if (this.transType == 'udp' && this.vRTPClientSocket) {
-                    await this.sendUDPPack(rtpBuf, this.vRTPClientSocket, this.vRTPClientPort, this.host);
-                    // this.vRTPClientSocket.send(rtpBuf, this.vRTPClientPort, this.host);
-                    await this.sleep(1);
-                    this.outBytes += rtpBuf.length;
-                    this.pushSession.outBytes += rtpBuf.length;
-                }
+                var len = rtpBuf.length + 4;
+                var headerBuf = Buffer.allocUnsafe(4);
+                headerBuf.writeUInt8(0x24, 0);
+                headerBuf.writeUInt8(this.vRTPChannel, 1);
+                headerBuf.writeUInt16BE(rtpBuf.length, 2);
+                this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
+                this.outBytes += len;
+                this.pushSession.outBytes += len;
             }
-            resolve();
-        })
+        }
     }
 
-    async sendVideo(rtpBuf) {
+    sendVideo(rtpBuf) {
         if (this.transType == 'tcp') {
             var len = rtpBuf.length + 4;
             var headerBuf = Buffer.allocUnsafe(4);
@@ -514,30 +503,26 @@ class RTSPSession extends event.EventEmitter {
     }
 
     broadcastVideo(rtpBuf) {
-        var playSessions = this.server.playSessions[this.path] || [];
-        for (var playSession of playSessions) {
-            playSession.sendVideo(rtpBuf);
+        for (var sid in this.playSessions) {
+            this.playSessions[sid].sendVideo(rtpBuf);
         }
     }
 
     broadcastVideoControl(rtpBuf) {
-        var playSessions = this.server.playSessions[this.path] || [];
-        for (var playSession of playSessions) {
-            playSession.sendVideoControl(rtpBuf);
+        for (var sid in this.playSessions) {
+            this.playSessions[sid].sendVideoControl(rtpBuf);
         }
     }
 
     broadcastAudio(rtpBuf) {
-        var playSessions = this.server.playSessions[this.path] || [];
-        for (var playSession of playSessions) {
-            playSession.sendAudio(rtpBuf);
+        for (var sid in this.playSessions) {
+            this.playSessions[sid].sendAudio(rtpBuf);
         }
     }
 
     broadcastAudioControl(rtpBuf) {
-        var playSessions = this.server.playSessions[this.path] || [];
-        for (var playSession of playSessions) {
-            playSession.sendAudioControl(rtpBuf);
+        for (var sid in this.playSessions) {
+            this.playSessions[sid].sendAudioControl(rtpBuf);
         }
     }
 

@@ -8,10 +8,8 @@ class RTSPServer extends events.EventEmitter {
     constructor(port = 554) {
         super();
         this.port = port;
-        // path <-> session
-        this.pushSessions = {};
-        // path <-> [sessions]
-        this.playSessions = {};
+        // push sessions : path <-> session
+        this.sessions = {};
         this.server = net.createServer();
         this.server.on("connection", socket => {
             new RTSPSession(socket, this);
@@ -35,7 +33,7 @@ class RTSPServer extends events.EventEmitter {
 
     addSession(session) {
         if(session.type == 'pusher') {
-            this.pushSessions[session.path] = session;
+            this.sessions[session.path] = session;
         } else if(session.type == 'player') {
             var playSessions = this.playSessions[session.path];
             if(!playSessions) {
@@ -50,7 +48,7 @@ class RTSPServer extends events.EventEmitter {
 
     removeSession(session) {
         if(session.type == 'pusher') {
-            delete this.pushSessions[session.path];
+            delete this.sessions[session.path];
         } else if(session.type == 'player') {
             var playSessions = this.playSessions[session.path];
             if(playSessions && playSessions.length > 0) {

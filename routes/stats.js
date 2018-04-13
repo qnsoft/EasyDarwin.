@@ -19,8 +19,8 @@ r.post('/pushers', async(req, res) => {
     var q = req.body.q || "";
     var sort = req.body.sort;
     var order = req.body.order;
-    for(var path in r.rtspServer.pushSessions) {
-        var pusher = r.rtspServer.pushSessions[path];
+    for(var path in r.rtspServer.sessions) {
+        var pusher = r.rtspServer.sessions[path];
         pushers.push({
             id: pusher.sid,
             path: `rtsp://${req.hostname}${cfg.rtsp_tcp_port == 554 ? '' : ':' + cfg.rtsp_tcp_port}${pusher.path}`,
@@ -28,7 +28,7 @@ r.post('/pushers', async(req, res) => {
             inBytes: pusher.inBytes,
             outBytes: pusher.outBytes,
             startAt: moment(pusher.startAt).format('YYYY-MM-DD HH:mm:ss'),
-            onlines: (r.rtspServer.playSessions[path]||[]).length
+            onlines: Object.keys(pusher.playSessions).length
         })
     }
     if(sort) {
@@ -61,8 +61,12 @@ r.post('/players', async(req, res) => {
     var q = req.body.q || "";
     var sort = req.body.sort;
     var order = req.body.order;
-    for(var path in r.rtspServer.playSessions) {
-        var _players = r.rtspServer.playSessions[path]||[];
+    for(var path in r.rtspServer.sessions) {
+        var pushSession = r.rtspServer.sessions[path];
+
+        var _players = Object.keys(pushSession.playSessions).map(key => {
+            return pushSession.playSessions[key];
+        })
         _players = _players.map(player => {
             return {
                 id: player.sid,

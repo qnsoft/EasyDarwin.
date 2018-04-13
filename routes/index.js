@@ -86,7 +86,7 @@ setInterval(() => {
     }
     var pusherCnt = 0;
     if(stats.rtspServer) {
-        pusherCnt = Object.keys(stats.rtspServer.pushSessions).length;
+        pusherCnt = Object.keys(stats.rtspServer.sessions).length;
     }
     pusherData.push({
         time: now,
@@ -97,8 +97,9 @@ setInterval(() => {
     }
     var playerCnt = 0;
     if(stats.rtspServer) {
-        for(var path in stats.rtspServer.playSessions) {
-            playerCnt += stats.rtspServer.playSessions[path].length;
+        for(var path in stats.rtspServer.sessions) {
+            var pushSession = stats.rtspServer.sessions[path];
+            playerCnt += Object.keys(pushSession.playSessions).length;
         }
     }
     playerData.push({
