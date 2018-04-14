@@ -420,8 +420,8 @@ class RTSPSession extends event.EventEmitter {
     }
 
     sendGOPCache() {
-        if (this.transType == 'tcp') {
-            for (var rtpBuf of this.pushSession.gopCache) {
+        for (var rtpBuf of this.pushSession.gopCache) {
+            if (this.transType == 'tcp') {
                 var len = rtpBuf.length + 4;
                 var headerBuf = Buffer.allocUnsafe(4);
                 headerBuf.writeUInt8(0x24, 0);
@@ -430,6 +430,10 @@ class RTSPSession extends event.EventEmitter {
                 this.socket.write(Buffer.concat([headerBuf, rtpBuf], len));
                 this.outBytes += len;
                 this.pushSession.outBytes += len;
+            } else if(false && this.transType == 'udp' && this.vRTPClientSocket) {// disable gop cache in UDP mode
+                this.vRTPClientSocket.send(rtpBuf, this.vRTPClientPort, this.host);
+                this.outBytes += rtpBuf.length;
+                this.pushSession.outBytes += rtpBuf.length;
             }
         }
     }
