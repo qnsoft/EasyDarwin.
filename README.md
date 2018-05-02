@@ -22,8 +22,7 @@ EasyDarwin Node.js 版本
 
 - 测试推流
 
-        ffmpeg -i rtmp://live.hkstv.hk.lxdns.com/live/hks \
-        -rtsp_transport tcp -vcodec h264 -f rtsp rtsp://localhost/test
+        ffmpeg -i rtmp://live.hkstv.hk.lxdns.com/live/hks -rtsp_transport tcp -vcodec h264 -f rtsp rtsp://localhost/test
 
 - 测试播放
 
