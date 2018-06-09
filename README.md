@@ -1,6 +1,4 @@
-# EasyDarwin
-
-EasyDarwin Node.js 版本
+# EasyDarwin开源流媒体服务器
 
 ![snapshot](snapshot.png)
 
