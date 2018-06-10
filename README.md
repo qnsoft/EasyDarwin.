@@ -31,3 +31,10 @@
 	cd EasyDarwin && npm i
 	npm i -g nodemon
 	npm run dev		      
+
+
+## 下一步开发计划
+
+- 系统运行信息统计：CPU、内存、分发流量、累积运行时间等；
+- 拉模式转发/分发；
+- 服务端录像；
