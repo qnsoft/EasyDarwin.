@@ -27,13 +27,13 @@
 
         ffplay -rtsp_transport tcp rtsp://localhost/test  
 
-##可以使用EasyPusher测试手机推流,[下载地址](https://github.com/EasyDSS/EasyPusher)
+## 可以使用EasyPusher测试手机推流,[下载地址](https://github.com/EasyDSS/EasyPusher)
 
-###推流URL规则: rtsp://{ip}:{port}/{id} ， 例如 : rtsp://www.easydarwin.org:554/your_stream_id
+### 推流URL规则: rtsp://{ip}:{port}/{id} ， 例如 : rtsp://www.easydarwin.org:554/your_stream_id
 
-##EasyPusher参数设置如下
+## EasyPusher参数设置如下
 ![snapshot](EasyPusher1.jpg)
-##可使用vlc播放器、[EasyScreenLive](https://github.com/EasyDSS/EasyScreenLive)、[EasyPlayer-RTSP](https://github.com/EasyDSS/EasyPlayer-RTSP-Win/releases)、[EasyPlayerPro](https://github.com/EasyDSS/EasyPlayerPro-Win)测试播放
+## 可使用vlc播放器、[EasyScreenLive](https://github.com/EasyDSS/EasyScreenLive)、[EasyPlayer-RTSP](https://github.com/EasyDSS/EasyPlayer-RTSP-Win/releases)、[EasyPlayerPro](https://github.com/EasyDSS/EasyPlayerPro-Win)测试播放
 
 - 效果图:
 
