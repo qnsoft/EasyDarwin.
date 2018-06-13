@@ -96,7 +96,7 @@ export default {
         columns: ["time", "总数"],
         rows: this.serverInfo ? this.serverInfo.playerData : []
       }
-    }    
+    }
   },
   methods: {
     ...mapActions([

@@ -12,7 +12,7 @@
       <div class="pull-right hidden-xs hide">
         EasyDarwin
       </div>
-      <strong>Copyright &copy; {{ thisYear() }} <a href="http://www.easydarwin.org">www.easydarwin.org</a>.</strong> All rights reserved.
+      <strong>程序本次运行了{{runtime}}Copyright &copy; {{ thisYear() }} <a href="http://www.easydarwin.org">www.easydarwin.org</a>.</strong> All rights reserved.
     </footer>
   </div>
 </template>
@@ -44,6 +44,7 @@ Vue.use(VCharts);
 export default {
   data() {
     return {
+      runtime:0,
     }
   },
   mounted() {
@@ -71,6 +72,9 @@ export default {
     $(() => {
         $("body").layout("fix");
     })
+    setInterval(() => {
+      this.getRuntime();
+    },1000)
   },
   components: {
     NaviBar, Sider, ModifyPasswordDlg
@@ -112,6 +116,11 @@ export default {
     },
     thisYear() {
       return moment().format('YYYY');
+    },
+    getRuntime(){
+      $.get('/runtime').then((data) =>{
+        this.runtime = data
+      })
     }
   }
 }

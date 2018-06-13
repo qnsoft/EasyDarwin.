@@ -8,9 +8,14 @@
 
 - 运行服务
 
+	下载release包,解压,注意,拉取代码无法双击运行,必须下载release包
+	![snapshot](fault.png)	
+
 	Windows 平台执行 `start.bat` 运行 EasyDarwin
 	
 	Linux 平台, 执行 `start.sh` 运行
+	
+	打开浏览器输入:localhost:10008,进入控制页面,默认用户名密码是admin/123456
 
 - 停止服务
 
