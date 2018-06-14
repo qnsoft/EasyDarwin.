@@ -6,7 +6,7 @@
 
 # http://www.easydarwin.org/
 
-# [在线演示地址](cloud.easydarwin.org:10008)
+# [在线演示地址](http://cloud.easydarwin.org:10008)
 
 # 主要功能特点
 
