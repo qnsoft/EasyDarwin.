@@ -2,6 +2,30 @@
 
 ![snapshot](snapshot.png)
 
+# 官网
+
+# http://www.easydarwin.org/
+
+# [在线演示地址](cloud.easydarwin.org:10008)
+
+# 主要功能特点
+
+- ### 基于nodejs开发维护
+
+- ### 支持windows、linux平台
+
+- ### 接收RTSP流推送
+
+- ### RTSP流分发
+
+- ### 关键帧缓存
+
+- ### 秒开画面
+
+- ### web后台管理
+
+- ### 分布式负载均衡
+
 ## 安装部署
 
 - [下载解压 release 包](https://github.com/EasyDarwin/EasyDarwin/releases)
