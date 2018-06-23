@@ -41,6 +41,10 @@
       "web_src"
     ]
   },
+  "repository": {  
+    "type": "git",  
+    "url": "https://github.com/EasyDarwin/EasyDarwin.git"
+  },
   "pack": {
     "pattern": "{routes/**,utils/**,www/**,*.js,*.bat,*.sh,*.md,node_modules/**}",
     "options": {
