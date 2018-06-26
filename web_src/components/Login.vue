@@ -11,7 +11,7 @@
                 <span class="glyphicon glyphicon-user form-control-feedback"></span>
             </div>
             <div :class="{'form-group':true, 'has-feedback':true,'has-error': errors.has('password')}">
-                <input type="password" class="form-control" placeholder="密码(123456)" autocomplete="new-password" v-validate="'required'" data-vv-as="密码" name="password" v-model.trim="password" @keydown.enter="doLogin">
+                <input type="password" class="form-control" :placeholder="this.show" autocomplete="new-password" v-validate="'required'" data-vv-as="密码" name="password" v-model.trim="password" @keydown.enter="doLogin">
                 <span class="glyphicon glyphicon-lock form-control-feedback"></span>
             </div>
             <br>
@@ -66,13 +66,20 @@ export default {
         return {
             username: '',
             password: '',
-            isLoading: false
+            isLoading: false,
+            show:null
         }
     },
     mounted() {
-        this.$el.querySelector('[name=username]').focus();
+        this.$el.querySelector('[name=username]').focus();  
+        $.get('/isDefaultPWd').then((data) =>{
+            this.show = data
+        })
     },
     methods: {
+        showPlaceholder(){
+            
+        },
         md5(text) {
             return crypto.createHash('md5').update(text, "utf8").digest('hex');
         },

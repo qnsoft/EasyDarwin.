@@ -26,6 +26,16 @@ r.post("/login", async (req, res) => {
     res.sendStatus(200);
 });
 
+r.get("/isDefaultPWd", async (req, res) => {
+    var dbPassword = utils.db.read().get('users').find({ name: "admin" }).cloneDeep().value().password;
+    var defaultPassword = utils.md5(cfg.defaultPwd);
+    if(dbPassword == defaultPassword) {
+        res.json("密码(admin)")
+    }else{
+        res.json("请输入密码")
+    }
+});
+
 r.get("/logout", async (req, res) => {
     delete req.session;
     if (utils.xhr(req)) {
