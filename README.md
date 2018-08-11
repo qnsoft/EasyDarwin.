@@ -1,5 +1,7 @@
 # EasyDarwin开源流媒体服务器
 
+![snapshot](./snap/easydarwin20180811.png)
+ 
 ## 主要功能特点
 
 - 基于nodejs开发维护
