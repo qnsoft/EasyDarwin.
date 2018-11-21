@@ -14,7 +14,7 @@
             <div class="box-header">
                 <h4 class="text-success text-center">推流列表</h4>           
                 <form class="form-inline">
-                  <div class="form-group hide">
+                  <div class="form-group">
                       <button type="button" class="btn btn-sm btn-success" @click.prevent="$refs['pullRTSPDlg'].show()"><i class="fa fa-plus"></i> 拉流分发</button>
                   </div>                  
                   <div class="form-group pull-right">
@@ -40,24 +40,24 @@
                           </span>
                       </template>
                     </el-table-column>                    
-                    <!-- <el-table-column prop="source" label="源地址" min-width="240" show-overflow-tooltip>
+                    <el-table-column prop="source" label="源地址" min-width="240" show-overflow-tooltip>
                       <template slot-scope="scope">
                         <span v-if="scope.row.source">{{scope.row.source}}</span>
                         <span v-else>-</span>
                       </template>
-                    </el-table-column>    -->
+                    </el-table-column>
                     <el-table-column prop="transType" label="传输方式" min-width="100"></el-table-column>                            
                     <el-table-column prop="inBytes" label="上行流量" min-width="120" :formatter="formatBytes" sortable="custom"></el-table-column>
                     <el-table-column prop="outBytes" label="下行流量" min-width="120" :formatter="formatBytes" sortable="custom"></el-table-column>
                     <el-table-column prop="onlines" label="在线人数" min-width="100" sortable="custom"></el-table-column>
                     <el-table-column prop="startAt" label="开始时间" min-width="200" sortable="custom"></el-table-column>
-                    <!-- <el-table-column label="操作" min-width="120" fixed="right">
+                    <el-table-column label="操作" min-width="120" fixed="right">
                         <template slot-scope="scope">
                             <div class="btn-group">
                                 <a role="button" class="btn btn-xs btn-danger" @click.prevent="stop(scope.row)" v-if="scope.row.source"><i class="fa fa-stop"></i> 停止</a>
                             </div>
                         </template>
-                    </el-table-column>                     -->
+                    </el-table-column>
                 </el-table>          
             </div>
             <div class="box-footer clearfix" v-if="total > 0">

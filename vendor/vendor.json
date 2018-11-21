@@ -15,6 +15,12 @@
 			"revisionTime": "2018-06-19T03:18:29Z"
 		},
 		{
+			"checksumSHA1": "aENNVxKxF9h9PfvTIstiAS5I3Lg=",
+			"path": "github.com/davecgh/go-spew/spew",
+			"revision": "d8f796af33cc11cb798c1aaeb27a4ebc5099927d",
+			"revisionTime": "2018-08-30T19:11:22Z"
+		},
+		{
 			"checksumSHA1": "Z2F5SuvrW7HDh2Sf32t1RwjeeY4=",
 			"origin": "github.com/penggy/EasyGoLib/vendor/github.com/eiannone/keyboard",
 			"path": "github.com/eiannone/keyboard",
@@ -273,11 +279,65 @@
 			"revisionTime": "2018-05-29T03:02:45Z"
 		},
 		{
+			"checksumSHA1": "49HYDrFko5VZCR5MZOUyvijGTwg=",
+			"path": "github.com/pixelbender/go-sdp/sdp",
+			"revision": "b6730408d89ceaddcdff8bda56708b2939a3fa17",
+			"revisionTime": "2018-08-26T19:30:30Z"
+		},
+		{
 			"checksumSHA1": "d6BycwPpKXW09I/tXMqcItE8SA4=",
 			"origin": "github.com/penggy/EasyGoLib/vendor/github.com/pkg/errors",
 			"path": "github.com/pkg/errors",
 			"revision": "d0926230dda8c9e4e61040cb7825a026dee7d2d3",
 			"revisionTime": "2018-09-07T02:33:35Z"
+		},
+		{
+			"checksumSHA1": "R3yk3OJzuq4MVfVGX5AhkkYv1ko=",
+			"path": "github.com/pmezard/go-difflib/difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"revisionTime": "2016-01-10T10:55:54Z"
+		},
+		{
+			"checksumSHA1": "3KDy97gEw52N7tfS3OlB8x7XqEs=",
+			"path": "github.com/reactivex/rxgo",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
+		},
+		{
+			"checksumSHA1": "QyCOlOF9mmS6atbOJpggOXAWdYM=",
+			"path": "github.com/reactivex/rxgo/errors",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
+		},
+		{
+			"checksumSHA1": "KSjbaO2693qdtnfMVYmDN06cf5c=",
+			"path": "github.com/reactivex/rxgo/fx",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
+		},
+		{
+			"checksumSHA1": "0T7xQPoTilBt5WSmnoMtKAYYkGg=",
+			"path": "github.com/reactivex/rxgo/handlers",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
+		},
+		{
+			"checksumSHA1": "ZyTYoTz426fsfJ5dEm7Gkt4FwXo=",
+			"path": "github.com/reactivex/rxgo/observable",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
+		},
+		{
+			"checksumSHA1": "dgkm9j9tF/myIYO8HACFTcB3un0=",
+			"path": "github.com/reactivex/rxgo/observer",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
+		},
+		{
+			"checksumSHA1": "VY058nmLGvJKq60MTf/jAmKIfLg=",
+			"path": "github.com/reactivex/rxgo/subscription",
+			"revision": "d8276d44ae6bf0008837d89d9d3413eda3c56ace",
+			"revisionTime": "2018-11-04T00:15:08Z"
 		},
 		{
 			"checksumSHA1": "q14d3C3xvWevU3dSv4P5K0+OSD0=",
@@ -296,6 +356,24 @@
 			"path": "github.com/shirou/gopsutil/mem",
 			"revision": "63047d776e07105e370af46ecbd0ae96850f5ef2",
 			"revisionTime": "2018-04-17T02:11:51Z"
+		},
+		{
+			"checksumSHA1": "XFoS3EvjeYlrc6l+9yyft2mCuIo=",
+			"path": "github.com/stretchr/objx",
+			"revision": "ef50b0de28773081167c97fc27cf29a0bf8b8c71",
+			"revisionTime": "2018-08-25T06:49:32Z"
+		},
+		{
+			"checksumSHA1": "6GJ7mGI1Dvsd9yFpj3ekYipMieo=",
+			"path": "github.com/stretchr/testify/assert",
+			"revision": "8019298d9fa5a04fc2ad10ae03349df3483096a6",
+			"revisionTime": "2018-10-28T12:27:15Z"
+		},
+		{
+			"checksumSHA1": "+a7oOHCDKSMrjyJjmtJ0KEmpD4g=",
+			"path": "github.com/stretchr/testify/mock",
+			"revision": "8019298d9fa5a04fc2ad10ae03349df3483096a6",
+			"revisionTime": "2018-10-28T12:27:15Z"
 		},
 		{
 			"checksumSHA1": "kLHYIzYvvehYJIC5a8+4a74+a1E=",
@@ -362,5 +440,5 @@
 			"revisionTime": "2018-03-28T19:50:20Z"
 		}
 	],
-	"rootPath": "github.com/EasyDarwin"
+	"rootPath": "github.com/EasyDarwin/EasyDarwin"
 }

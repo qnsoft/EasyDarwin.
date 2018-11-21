@@ -31,6 +31,8 @@ type RTSPClient struct {
 	connRW               *bufio.ReadWriter
 	InBytes              int
 	OutBytes             int
+	TransType            TransType
+	StartAt              time.Time
 	Sdp                  *sdp.Session
 	AControl             string
 	VControl             string
@@ -69,6 +71,7 @@ func NewRTSPClient(server *Server, rawUrl string, sendOptionMillis int64) *RTSPC
 		aRTPChannel:          2,
 		aRTPControlChannel:   3,
 		OptionIntervalMillis: sendOptionMillis,
+		StartAt:              time.Now(),
 	}
 	return client
 }
